@@ -45,17 +45,17 @@ def test_windows_redirected_documents(monkeypatch, tmp_path):
 
 
 def test_missing_output_settings_default_and_persist(settings, tmp_path, monkeypatch):
-    data = yaml.safe_load(settings.config_path.read_text())
+    data = yaml.safe_load(settings.config_path.read_text(encoding='utf-8'))
     data['documents']['noc'].pop('output_dir')
     data['documents']['affidavit']['output_dir'] = ''
     monkeypatch.setattr(runtime_paths, 'documents_directory', lambda: tmp_path / 'Documents')
-    settings.config_path.write_text(yaml.safe_dump(data))
+    settings.config_path.write_text(yaml.safe_dump(data), encoding='utf-8')
     store = DesktopConfig(settings.config_path)
     loaded = store.load()
     assert loaded.documents['noc'].output_dir == tmp_path / 'Documents' / 'noc Documents'
     assert loaded.documents['affidavit'].output_dir == tmp_path / 'Documents' / 'affidavit Documents'
     assert loaded.documents['consent'].output_dir == settings.documents['consent'].output_dir
-    persisted = yaml.safe_load(settings.config_path.read_text())
+    persisted = yaml.safe_load(settings.config_path.read_text(encoding='utf-8'))
     assert persisted['documents']['noc']['output_dir'] == str(loaded.documents['noc'].output_dir)
     before = settings.config_path.read_bytes()
     assert store.load() == loaded
@@ -71,10 +71,10 @@ def test_explicit_missing_directory_is_not_replaced(settings):
 
 
 def test_frozen_templates_resolve_from_bundle_not_appdata(settings, tmp_path, monkeypatch):
-    data = yaml.safe_load(settings.config_path.read_text())
+    data = yaml.safe_load(settings.config_path.read_text(encoding='utf-8'))
     for config in data['documents'].values():
         config['template_path'] = 'templates/' + Path(config['template_path']).name
-    settings.config_path.write_text(yaml.safe_dump(data))
+    settings.config_path.write_text(yaml.safe_dump(data), encoding='utf-8')
     bundle = tmp_path / 'extracted bundle'
     monkeypatch.setattr(runtime_paths, 'is_frozen', lambda: True)
     monkeypatch.setattr(runtime_paths, 'resource_root', lambda: bundle)
@@ -88,13 +88,13 @@ def test_frozen_templates_resolve_from_bundle_not_appdata(settings, tmp_path, mo
     updated = DesktopConfig(settings.config_path).save_output('noc', chosen)
     assert updated.documents['noc'].output_dir == chosen
     # Persistence never writes ephemeral _MEIPASS paths into office YAML.
-    assert yaml.safe_load(settings.config_path.read_text())['documents']['noc']['template_path'].startswith('templates/')
+    assert yaml.safe_load(settings.config_path.read_text(encoding='utf-8'))['documents']['noc']['template_path'].startswith('templates/')
 
 
 def test_bundled_template_traversal_rejected(settings, monkeypatch):
-    data = yaml.safe_load(settings.config_path.read_text())
+    data = yaml.safe_load(settings.config_path.read_text(encoding='utf-8'))
     data['documents']['noc']['template_path'] = '../outside.docx'
-    settings.config_path.write_text(yaml.safe_dump(data))
+    settings.config_path.write_text(yaml.safe_dump(data), encoding='utf-8')
     monkeypatch.setattr(runtime_paths, 'is_frozen', lambda: True)
     with pytest.raises(SetupError): DesktopConfig(settings.config_path).load()
 
@@ -102,7 +102,7 @@ def test_bundled_template_traversal_rejected(settings, monkeypatch):
 @pytest.mark.parametrize('content', [None, 'broken: [yaml', 'schema_version: 1', 'schema_version: 1\nschema_version: 2'])
 def test_startup_config_errors_are_contained(tmp_path, monkeypatch, content):
     path = tmp_path / 'config.yaml'
-    if content is not None: path.write_text(content)
+    if content is not None: path.write_text(content, encoding='utf-8')
     labels = []
     monkeypatch.setattr(app.ttk, 'Label', lambda *a, **kw: labels.append(kw['text']) or Mock())
     root = Mock()
@@ -132,18 +132,18 @@ def test_rotating_logs_and_secret_free_exceptions(settings, tmp_path, monkeypatc
         except RuntimeError as exc: desktop.log_failure('generation failed', exc, 'noc')
     finally:
         logger.removeHandler(handler); handler.close()
-    text = (tmp_path / 'logs' / 'generator.log').read_text()
+    text = (tmp_path / 'logs' / 'generator.log').read_text(encoding='utf-8')
     assert 'noc generation failed' in text and 'RuntimeError' in text and 'test_desktop_runtime.py' in text
     assert 'SECRET_PRIVATE_KEY_MATERIAL' not in text
     assert handler.backupCount == 4
 
 
 def test_installer_seed_is_redacted_and_valid_after_administrator_setup(tmp_path, monkeypatch):
-    data = yaml.safe_load((ROOT / 'config.example.yaml').read_text())
+    data = yaml.safe_load((ROOT / 'config.example.yaml').read_text(encoding='utf-8'))
     assert data['google']['spreadsheet_id'] == 'YOUR_SPREADSHEET_ID'
     assert 'private_key' not in str(data)
     data['google']['spreadsheet_id'] = 'synthetic_test_spreadsheet_0123456789'
-    path = tmp_path / 'config.yaml'; path.write_text(yaml.safe_dump(data))
+    path = tmp_path / 'config.yaml'; path.write_text(yaml.safe_dump(data), encoding='utf-8')
     monkeypatch.setattr(runtime_paths, 'documents_directory', lambda: tmp_path / 'Documents')
     settings = DesktopConfig(path).load()
     assert {key: c.output_dir.name for key, c in settings.documents.items()} == {

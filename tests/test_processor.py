@@ -55,7 +55,7 @@ def test_preflight_before_mutation(settings,tmp_path,problem):
     if problem=='operational_duplicate': sheet.data[0].append('processing_status')
     if problem=='template': settings=replace(settings,documents={**settings.documents,'noc':replace(settings.documents['noc'],template_path=tmp_path/'missing.docx')})
     if problem=='destination':
-        path=settings.documents['noc'].output_dir; path.parent.mkdir(parents=True); path.write_text('not a directory')
+        path=settings.documents['noc'].output_dir; path.parent.mkdir(parents=True); path.write_text('not a directory', encoding='utf-8')
     with pytest.raises(SetupError): run_batch(settings,'noc',rows=[200] if problem=='rows' else None,worksheet=sheet)
     assert not sheet.writes
 

@@ -9,7 +9,7 @@ FIXTURES = Path(__file__).parent / 'fixtures'
 
 
 def values(key):
-    return json.loads((FIXTURES / f'{key}.json').read_text())
+    return json.loads((FIXTURES / f'{key}.json').read_text(encoding='utf-8'))
 
 
 class FakeSheet:

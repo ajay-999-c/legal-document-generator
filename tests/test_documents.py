@@ -36,7 +36,7 @@ def test_schema_against_business_contract(key,count,required):
     assert sum(f.required for f in spec.fields) == required
     assert {f.parameter for f in spec.fields if not f.required} == ({'document_date','signatory_role'} if key=='noc' else {'document_date'})
     title={'noc':'NOC','affidavit':'Affidavit','consent':'Consent Letter'}[key]
-    section=(ROOT/'FORM_SPEC.md').read_text().split('# '+title+' Form\n')[1].split('\n# ')[0]
+    section=(ROOT/'FORM_SPEC.md').read_text(encoding='utf-8').split('# '+title+' Form\n')[1].split('\n# ')[0]
     question_rows=[line.split('|')[1:-1] for line in section.split('## Questions')[1].split('## ')[0].splitlines() if re.match(r'\| \d+ \|',line)]
     assert len(question_rows)==count
     for field,row in zip(spec.fields,question_rows):

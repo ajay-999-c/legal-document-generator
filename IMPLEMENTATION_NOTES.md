@@ -226,3 +226,26 @@ permissions, office Microsoft Word layout/fonts, and explicitly approved live
 Sheets access/generation/sync failure handling. The deployment guide contains the
 full setup and acceptance procedure. The app prevents overlapping jobs within one
 window, not across machines or multiple application instances.
+
+## Windows test portability correction
+
+A Windows run reported 117 failures / 96 passes, with repeated CP1252 decoding
+errors loading the Hindi JSON fixtures and FORM_SPEC.md. Reproduced the exact
+fixture error locally by decoding the UTF-8 bytes as CP1252 (undefined byte 0x8d
+at offset 39). Test fixture/spec reads now explicitly select UTF-8; the remaining
+test text-file reads/writes also specify UTF-8 to remain independent of the locale.
+Production configuration I/O already selected UTF-8 and was not changed.
+
+Also replaced slash-based template basename extraction in the standalone-copy test
+with Path.name, which supports native Windows backslash paths. The Windows build
+version guard now prints the interpreter/version and exits explicitly for anything
+other than Python 3.11 or 3.14, rather than relying on an assertion that Python
+optimization can disable. The user confirmed that Python 3.14 is intentional on
+Windows, so the build guard and deployment guide now accept that target. PyInstaller
+6.22.3 includes 3.14 support. This is separate from the encoding defect; full
+Windows/Python 3.14 application and executable verification remains pending.
+
+Added five regression cases simulating CP1252 defaults for all three Hindi fixtures,
+the Form contract checks and a Hindi output-directory YAML round trip. Verification:
+**218 offline tests passed locally on macOS in 18.16 seconds**. Windows rerun/build
+is still required; no Windows execution or EXE build is claimed for this correction.

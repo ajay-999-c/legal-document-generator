@@ -10,7 +10,7 @@ if not exist "%PROJECT_PYTHON%" (
   echo ERROR: Create the project .venv and install requirements-build.txt first.
   exit /b 1
 )
-"%PROJECT_PYTHON%" -c "import sys; assert sys.version_info[:2] == (3, 11), 'Use Python 3.11 for this build'"
+"%PROJECT_PYTHON%" -c "import sys; print(sys.executable); print(sys.version); sys.exit(0 if sys.version_info[:2] in ((3, 11), (3, 14)) else 'Use Python 3.11 or 3.14 for this build')"
 if errorlevel 1 exit /b 1
 "%PROJECT_PYTHON%" -m pip check
 if errorlevel 1 exit /b 1

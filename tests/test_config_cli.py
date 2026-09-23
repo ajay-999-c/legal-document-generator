@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import Mock
 import subprocess
 import sys
@@ -33,7 +34,7 @@ def test_bad_patterns(config_data,tmp_path,pattern):
     with pytest.raises(SetupError): load_settings(write_config(tmp_path,config_data))
 
 def test_duplicate_yaml_unknown_key(config_data,tmp_path):
-    path=write_config(tmp_path,config_data); path.write_text(path.read_text()+'\nschema_version: 1\n')
+    path=write_config(tmp_path,config_data); path.write_text(path.read_text(encoding='utf-8')+'\nschema_version: 1\n', encoding='utf-8')
     with pytest.raises(SetupError,match='unique'): load_settings(path)
     config_data['documents']['unregistered']={'enabled':True}
     with pytest.raises(SetupError,match='Unsupported'): load_settings(write_config(tmp_path,config_data))
@@ -110,7 +111,7 @@ def test_standalone_copy_without_legacy(config_data,tmp_path):
     shutil.copytree(ROOT/'documents',destination/'documents',ignore=shutil.ignore_patterns('__pycache__'))
     shutil.copytree(ROOT/'templates',destination/'templates')
     for config in config_data['documents'].values():
-        config['template_path']='templates/'+config['template_path'].split('/')[-1]
+        config['template_path']='templates/'+Path(config['template_path']).name
     config=write_config(destination,config_data)
     # Fresh interpreter with neither parent workspace nor sibling apps on sys.path.
     script="from config_manager import load_settings; from document_registry import SPECS; from document_generator import preflight_template; s=load_settings(); [preflight_template(SPECS[k], c, s) for k,c in s.documents.items()]; print('standalone templates OK')"

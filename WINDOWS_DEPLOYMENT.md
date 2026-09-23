@@ -7,19 +7,25 @@ occurs. The Windows executable must be built **on Windows**, not on macOS.
 
 ## Build machine
 
-Use **64-bit Python 3.11** from python.org on Windows 10/11, including Tcl/Tk and
-pip. This is the supported build version; the build script enforces it. Use a
-current 3.11 patch release on Windows. The source GUI has been smoke-tested on
+Use **64-bit Python 3.14** (the office Windows version) or **3.11**, including
+Tcl/Tk and pip. The build script accepts these two versions and requires the full
+offline suite to pass. Python 3.14 Windows application/build validation is pending;
+PyInstaller 6.22.3 includes Python 3.14 support, added in
+[PyInstaller 6.15](https://pyinstaller.org/en/stable/CHANGES.html). The source GUI has been smoke-tested on
 macOS with the existing project Python 3.11.0/Tk 8.6. Windows binary, installer,
 Word rendering and production access still require the acceptance checks below.
 
 From PowerShell in this project (do not reuse a Mac or sibling virtual environment):
 
 ```powershell
-py -3.11 -m venv .venv
+py -3.14 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-build.txt
 .\build_windows.bat
 ```
+
+If your project `.venv` already uses Python 3.14, keep it and skip creation. For a
+3.11 build, use `py -3.11` instead. Installing another global interpreter does not
+change an existing virtual environment.
 
 The batch file uses `.venv\Scripts\python.exe`, checks dependencies, runs the
 complete offline suite, stops on failure, and runs the reviewed PyInstaller spec.
@@ -190,6 +196,8 @@ cannot be written, startup reports Setup error; check the directory's permission
 
 | Symptom | Administrator action |
 | --- | --- |
+| Tests fail with CP1252 / UnicodeDecodeError | Update the source checkout: fixture, Form specification and test text I/O now explicitly use UTF-8. Do not change or remove the Hindi fixture content. |
+| Build reports an unexpected Python version | The updated script allows 3.11 and 3.14. Check `.\.venv\Scripts\python.exe --version`; the build uses that interpreter, not whichever global Python is installed. |
 | Setup error on launch | Check the AppData config exists, YAML syntax/unique keys, actual spreadsheet ID, distinct per-document destinations and worksheets. Restart after edits. |
 | Setup error on Generate | Check credential-file presence/validity, Google Sheets API enablement, sharing and exact worksheet name. Inspect exception type/location in logs. |
 | Missing template | Reinstall the correct build; preserve the relative template paths in YAML. Do not copy an absolute Mac path to Windows. |
@@ -202,7 +210,7 @@ cannot be written, startup reports Setup error; check the directory's permission
 | Configuration edited while open | Restart before generating so displayed folders and processor settings agree. |
 | Window cannot close | Allow the active request/batch to finish. Cloud read retries/timeouts are bounded by the existing backend. |
 | Windows blocks EXE/script | Follow IT signing/allowlisting procedures; inspect build provenance and security alerts. |
-| Missing DLL/Tk or immediate launch failure | Rebuild with Python 3.11 x64 and requirements-build.txt; inspect PyInstaller warnings and test on a clean Windows machine. |
+| Missing DLL/Tk or immediate launch failure | Rebuild with the selected Python 3.11/3.14 x64 environment and requirements-build.txt; inspect PyInstaller warnings and test on a clean Windows machine. |
 
 ## Required Windows acceptance before office rollout
 

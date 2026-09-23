@@ -85,11 +85,11 @@ def test_future_registry_document(settings, monkeypatch):
 
 
 def test_browse_persists_exact_folder_and_preserves_other_settings(controller, tmp_path):
-    before = yaml.safe_load(controller.store.path.read_text())
+    before = yaml.safe_load(controller.store.path.read_text(encoding='utf-8'))
     chosen = tmp_path / 'Office output'; chosen.mkdir()
     controller.choose_folder = Mock(return_value=str(chosen))
     controller.browse('noc')
-    after = yaml.safe_load(controller.store.path.read_text())
+    after = yaml.safe_load(controller.store.path.read_text(encoding='utf-8'))
     expected = before.copy()
     before['documents']['noc']['output_dir'] = str(chosen)
     assert after == expected
@@ -206,9 +206,9 @@ def test_partial_errors_and_sync_feedback(controller, outcome):
 
 
 def test_config_changed_before_job_is_blocked(controller):
-    data = yaml.safe_load(controller.store.path.read_text())
+    data = yaml.safe_load(controller.store.path.read_text(encoding='utf-8'))
     data['documents']['noc']['output_dir'] = 'changed'
-    controller.store.path.write_text(yaml.safe_dump(data))
+    controller.store.path.write_text(yaml.safe_dump(data), encoding='utf-8')
     controller.processor = Mock()
     controller.generate('noc')
     controller.processor.assert_not_called()
@@ -311,14 +311,14 @@ def test_backend_setup_failures_are_contained_by_gui(controller, monkeypatch, pr
     if problem != 'credentials':
         monkeypatch.setattr(processor, 'connect', Mock(return_value=sheet))
     if problem == 'template':
-        data = yaml.safe_load(controller.store.path.read_text())
+        data = yaml.safe_load(controller.store.path.read_text(encoding='utf-8'))
         data['documents']['noc']['template_path'] = 'absent.docx'
-        controller.store.path.write_text(yaml.safe_dump(data))
+        controller.store.path.write_text(yaml.safe_dump(data), encoding='utf-8')
         controller.settings = controller.store.load()
     if problem == 'mapping': sheet.data[0][1] = 'Wrong heading'
     if problem == 'output':
         output = controller.settings.documents['noc'].output_dir
-        output.parent.mkdir(parents=True); output.write_text('not a directory')
+        output.parent.mkdir(parents=True); output.write_text('not a directory', encoding='utf-8')
     controller.generate('noc'); wait_for_job(controller)
     assert controller.tabs['noc'].status.startswith('Setup error')
     assert all(tab.enabled for tab in controller.tabs.values())
