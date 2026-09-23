@@ -1,6 +1,6 @@
-# Legal Document Generator Phase 1
+# Legal Document Generator
 
-Standalone Mac backend and CLI for the existing NOC, Affidavit, and Consent Forms. Each document uses its own worksheet and output directory in one spreadsheet. The current business contract is [FORM_SPEC.md](FORM_SPEC.md), regenerated on 23 September 2026. No legacy application is imported at runtime.
+Shared backend, CLI and Tkinter desktop application for the existing NOC, Affidavit, and Consent Forms. Each document uses its own worksheet and output directory in one spreadsheet. The current business contract is [FORM_SPEC.md](FORM_SPEC.md), regenerated on 23 September 2026. No legacy application is imported at runtime.
 
 | Key | Worksheet | Inputs | Required | Optional |
 | --- | --- | ---: | ---: | --- |
@@ -8,7 +8,9 @@ Standalone Mac backend and CLI for the existing NOC, Affidavit, and Consent Form
 | `affidavit` | `Affidavit Responses` | 17 | 16 | Document Date |
 | `consent` | `Consent Responses` | 24 | 23 | Document Date |
 
-Tkinter, Windows packaging, installers, polling and background jobs are not implemented. This phase provides the backend that a later desktop UI can call.
+The Tkinter desktop application now adds registry-driven NOC, Affidavit and Consent tabs on this shared backend. Run `.venv/bin/python app.py` from source. Each tab persists its own Save Folder in `config.yaml`; Generate runs only that document in a worker, with one job per application window. Startup performs no Sheets operations. Templates and administrator settings stay out of the office UI.
+
+See [Windows deployment](WINDOWS_DEPLOYMENT.md) for build, installation, configuration, credentials, upgrades and acceptance checks. Windows packaging infrastructure is provided; the Windows executable and installer still require testing on Windows. Automatic polling and scheduled generation are not implemented.
 
 ## Environment and offline tests
 
@@ -170,6 +172,6 @@ File save and Sheet status update are **not one transaction**. Retrying the same
 
 ## Backend extension interface
 
-`run_batch(settings, document_key, rows=None, dry_run=False, worksheet=None, progress=None)` returns `BatchResult` with per-row outcomes, counts, saved paths and synchronization errors. An optional callback receives each `RowOutcome`; callback failure is logged without aborting document processing. A later UI can call this interface without importing any GUI code into the backend.
+`run_batch(settings, document_key, rows=None, dry_run=False, worksheet=None, progress=None)` returns `BatchResult` with per-row outcomes, counts, saved paths and synchronization errors. An optional callback receives each `RowOutcome`; callback failure is logged without aborting document processing. The desktop calls this interface without importing any GUI code into the backend.
 
-Adding a new document requires a versioned adapter/field contract, template, explicit registry entry and YAML entry. The shared processor and CLI generation path contain no per-document branches. Future Windows UI tabs, directory persistence UI, threading, packaging and installers remain Phase 2 work.
+Adding a new document requires a versioned adapter/field contract, template, explicit registry entry and YAML entry. The shared processor and CLI generation path contain no per-document branches. The desktop application uses this same extension interface. Its generic tab component requires no document-specific UI functions; packaging includes templates explicitly, and the installer preserves existing runtime settings.

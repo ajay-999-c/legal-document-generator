@@ -59,9 +59,9 @@ def test_actual_template_render_text_and_format(settings,key):
     with ZipFile(settings.documents[key].template_path) as source, ZipFile(BytesIO(output)) as generated:
         for name in source.namelist():
             if name.startswith(('word/styles','word/numbering','word/theme','word/media')):
-                if key == 'noc' and name.endswith('.xml'):
-                    # The manually saved template's XML declaration uses different
-                    # quoting; compare canonical XML, preserving all style content.
+                if name.endswith('.xml'):
+                    # Serialization may normalize declaration quotes/newlines.
+                    # Compare XML content for every adapter, binary assets exactly.
                     assert ET.canonicalize(source.read(name)) == ET.canonicalize(generated.read(name))
                 else:
                     assert source.read(name)==generated.read(name)

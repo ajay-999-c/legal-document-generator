@@ -96,3 +96,133 @@ Phase 2 is deliberately deferred: dynamically generated Tkinter tabs, Windows ex
 After live generation, the user reported that age 20 was larger than the surrounding text. The AGE run in the target Affidavit template had explicit `w:sz` and `w:szCs` values of 32 (16 points), while the normal document size is 24 (12 points). Removed only those two size overrides so the age inherits the normal size. Other formatting, text and ZIP parts were preserved; no backend font-size transformation was added.
 
 The previous local output was no longer present when applying the correction. Affidavit row 2 was read again and regenerated locally from the corrected template without changing Sheet cells or resetting GENERATED. The age run in the new output has no explicit size override. macOS Quick Look preview of the age line was visually inspected and shows 20 at the normal text size. This targeted preview is not a full Word pagination certification; the bundled LibreOffice renderer is unavailable on this Mac. Legacy templates/projects were not modified.
+
+## Phase 2 desktop implementation — 23 September 2026
+
+This section supersedes the earlier Phase-2 deferral. The historical Phase-1
+verification notes above remain a record of those earlier runs.
+
+The initial regression run found 162 passed / 1 failed. The Affidavit style test
+compared XML bytes, while python-docx normalized declaration quotes and a newline
+in styles.xml and numbering.xml. Canonical XML was identical, and a plain
+python-docx open/save reproduced the difference without the application renderer.
+The approved test correction applies canonical comparison to XML styling resources
+for every adapter, retaining exact binary-asset comparisons. The corrected baseline
+passed all 163 tests before desktop implementation began. No template changed.
+
+### Implementation
+
+- `app.py`: source/windowed entry point, contained startup errors and rotating
+  application logging. Startup loads local configuration; no Sheets calls.
+- `desktop.py`: one `DocumentTab`, registry-generated Notebook pages, main-thread
+  controller, background call to the existing `processor.run_batch`, queue polling,
+  one-job guard, independent result feedback, native folder selection and platform
+  folder opening. A live job prevents closure until it finishes.
+- `desktop_config.py`: the existing strict loader plus atomic, validated YAML
+  persistence for the selected output directory. Reads fresh settings before
+  writing; a failed validation or replace preserves the previous file. YAML
+  comments/formatting are normalized on save; unrelated setting values remain.
+- `runtime_paths.py`: per-user Windows AppData identity, redirected Documents
+  defaults and PyInstaller resource lookup. Source CLI path behavior is unchanged.
+  Packaged relative templates resolve in the bundle, while credentials and output
+  paths retain their config-relative semantics. Bundle paths are never persisted.
+- Packaging: `legal_document_generator.spec`, `requirements-build.txt`,
+  `build_windows.bat`, `install_windows.ps1`, `config.example.yaml` and
+  `WINDOWS_DEPLOYMENT.md`. The example YAML is only an installer seed. It is not
+  loaded as fallback runtime settings, and is not bundled into the EXE.
+- Verification: `tests/test_desktop.py`, `tests/test_desktop_runtime.py`, and the
+  display-required `scripts/smoke_gui.py`. Existing Phase-1 tests are preserved.
+
+The desktop does not contain business mappings or per-document processors. Registry
+and config additions plus a reviewed adapter/template are sufficient for future
+tabs. Generate runs the entire eligible batch of the selected document; selected-row
+operations remain available through the existing CLI. Failed UI counts aggregate
+failed, invalid, changed and sync_failed outcomes; synchronization warnings remain
+explicit. Worker threads enqueue results and never access Tk widgets or `after`.
+
+Logs record document key, destination, start/end summaries, backend row diagnostics
+and sync failures. Unexpected errors record types, causal types and stack locations,
+not potentially secret cloud exception payloads. Explicit Phase-1 SetupError
+messages are logged separately. Credentials are never opened by the GUI itself.
+
+### Final verification
+
+- Complete offline suite: **213 passed**, no failed/skipped tests (17.35 seconds).
+  This includes 163 baseline tests and 50 desktop/runtime tests. Network connections
+  remain blocked by the existing fixture; GUI-to-backend integration uses fake Sheets.
+- Real macOS Tk 8.6 smoke test: **passed**, twice, including after runtime-path
+  support. A real window displayed and switched through all three tabs. A fake
+  Affidavit job disabled every Generate button, completed through queue polling,
+  updated only Affidavit results, restored controls and closed normally.
+- `.venv/bin/python main.py list-documents`: passed, all three schemas reported.
+- `.venv/bin/python -m pip check`: no broken requirements.
+- `git diff --check`: passed.
+- No live Sheets generation or network Sheet checks were used. No credentials,
+  real config, generated output, document templates, adapters or Phase-1 production
+  modules were modified. No legacy sibling project was modified.
+- No Windows EXE was built on macOS. The spec was executed with offline PyInstaller
+  doubles to verify explicit template inclusion, secret exclusion by project asset
+  allowlist, output name and no-console configuration. This does not replace a real
+  Windows build or binary-content inspection.
+
+### Final project structure
+
+```text
+legal-document-generator/
+├── app.py                         # desktop entry point (added)
+├── desktop.py                     # reusable view/controller (added)
+├── desktop_config.py              # shared YAML persistence (added)
+├── runtime_paths.py               # source/packaged locations (added)
+├── main.py                        # existing CLI, unchanged
+├── config_manager.py              # existing strict loader, unchanged
+├── document_registry.py           # existing registry, unchanged
+├── processor.py                   # existing shared processor, unchanged
+├── sheets_service.py              # existing Sheets client, unchanged
+├── document_generator.py          # existing renderer/validation, unchanged
+├── models.py                      # existing contracts, unchanged
+├── documents/                     # existing three adapters, unchanged
+├── templates/                     # existing three DOCX files, unchanged
+├── tests/
+│   ├── test_desktop.py             # added
+│   ├── test_desktop_runtime.py     # added
+│   ├── test_documents.py           # XML-comparison correction only
+│   ├── test_config_cli.py          # unchanged
+│   ├── test_processor.py           # unchanged
+│   ├── conftest.py, helpers.py     # unchanged
+│   └── fixtures/                  # unchanged
+├── scripts/smoke_gui.py            # added, offline real-window smoke test
+├── config.example.yaml            # added, redacted installer seed
+├── config.yaml                    # ignored active source settings, unchanged
+├── credentials.json               # ignored secret, unchanged
+├── requirements.txt               # existing runtime/test pins, unchanged
+├── requirements-build.txt         # added, Windows build pins
+├── legal_document_generator.spec  # added
+├── build_windows.bat              # added
+├── install_windows.ps1            # added
+├── WINDOWS_DEPLOYMENT.md           # added
+├── README.md                      # updated desktop entry points
+├── IMPLEMENTATION_NOTES.md        # this Phase-2 record appended
+├── FORM_SPEC.md                    # unchanged
+├── CODEX_PHASE1_IMPLEMENTATION_PLAN.md # unchanged
+└── .gitignore                     # allow reviewed build spec
+```
+
+The existing local `.venv`, caches, logs and generated directories remain ignored.
+No commit was created by this implementation.
+
+### Handoff and remaining Windows acceptance
+
+Source launch: `.venv/bin/python app.py`.
+
+Windows build after environment setup: `.\build_windows.bat`.
+
+Windows install from project/release layout:
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install_windows.ps1`.
+
+The real Windows build, dependency hooks/Tcl bundling, executable launch, shortcut
+creation, installer execution and upgrade preservation still require a Windows
+machine. Also verify redirected Documents, Unicode/network output paths, AppData
+permissions, office Microsoft Word layout/fonts, and explicitly approved live
+Sheets access/generation/sync failure handling. The deployment guide contains the
+full setup and acceptance procedure. The app prevents overlapping jobs within one
+window, not across machines or multiple application instances.

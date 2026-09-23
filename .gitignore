@@ -96,3 +96,6 @@ Desktop.ini
 .vscode/
 *.swp
 *.swo
+
+# Reviewed Windows build specification
+!legal_document_generator.spec

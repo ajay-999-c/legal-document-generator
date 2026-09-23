@@ -1,0 +1,43 @@
+# Installer seed only. The sole active settings file is config.yaml.
+# Administrator: set spreadsheet_id and confirm each worksheet's date format.
+schema_version: 1
+app:
+  name: Legal Document Generator
+  log_file: logs/generator.log
+  log_level: INFO
+google:
+  spreadsheet_id: YOUR_SPREADSHEET_ID
+  credentials_file: credentials.json
+  scopes:
+    - https://www.googleapis.com/auth/spreadsheets
+formatting:
+  document_date_format: '%d-%m-%Y'
+  processed_at_format: '%d-%m-%Y %H:%M:%S'
+  blank_document_date: '..........'
+processing:
+  error_message_max_length: 500
+documents:
+  noc:
+    enabled: true
+    label: NOC
+    worksheet_name: NOC Responses
+    template_path: templates/Noc_Template.docx
+    output_dir: ''
+    filename_pattern: NOC_{project_name}_{recipient_name}_{row_number}.docx
+    input_date_format: '%m/%d/%Y'
+  affidavit:
+    enabled: true
+    label: Affidavit
+    worksheet_name: Affidavit Responses
+    template_path: templates/Affidavit_Template.docx
+    output_dir: ''
+    filename_pattern: AFFIDAVIT_{name}_{row_number}.docx
+    input_date_format: '%m/%d/%Y'
+  consent:
+    enabled: true
+    label: Consent
+    worksheet_name: Consent Responses
+    template_path: templates/Consent_Template.docx
+    output_dir: ''
+    filename_pattern: CONSENT_{project_name}_{applicant_name}_{row_number}.docx
+    input_date_format: '%m/%d/%Y'

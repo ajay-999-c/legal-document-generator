@@ -1,0 +1,3 @@
+-r requirements.txt
+# Windows build environment only; not needed for source GUI execution.
+PyInstaller==6.22.3
