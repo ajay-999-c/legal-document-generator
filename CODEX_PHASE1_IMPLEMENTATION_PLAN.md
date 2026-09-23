@@ -131,8 +131,6 @@ All administrator-editable runtime settings must be in `legal-document-generator
 
 Do not introduce `.env`, `settings.json`, per-document YAML files, AppData settings, environment-specific YAML files, or a second active configuration source in Phase 1. Document a redacted YAML example in README rather than creating competing config files.
 
-**Credential exception:** a Google service-account JSON is a secret, not a second settings file. Keep it as a separately secured, untracked file and reference its path in YAML. Never paste a private key into YAML, source, tests, logs, or the task response. Do not display or copy old credential contents. The user will provision the credential file; runtime use through the authentication library is permitted when the user runs a live command.
-
 Create a placeholder `config.yaml` only if absent. Do not overwrite a populated configuration. The existing service account can be used if it has the necessary spreadsheet access; do not create a new account or key as part of coding.
 
 Suggested configuration contract, subject only to small documented implementation adjustments:
