@@ -25,7 +25,7 @@ python3 -m venv .venv
 .venv/bin/python main.py list-documents
 ```
 
-Skip the `venv` creation command when the project environment already exists. The implementation environment is `/Users/mac/python/jobmitra/legal-document-generator/.venv/bin/python`. Direct package versions are pinned in the project's single `requirements.txt`; transitive dependencies are resolved by pip. No global or sibling packages are required.
+Skip the `venv` creation command when the project environment already exists. Direct package versions are pinned in the project's single `requirements.txt`; transitive dependencies are resolved by pip. No global or sibling packages are required.
 
 Tests use synthetic fixtures, fake Sheets, socket blocking and temporary output directories. They render the actual target DOCX templates and inspect text, indexed committee entries, Word headers and unchanged style resources. These checks do not establish visual page-layout quality; opening the live test outputs is a separate acceptance step.
 
@@ -92,12 +92,6 @@ The initial `%Y-%m-%d` input format is an example, not an assertion about your S
 All Sheet cells are read as formatted strings rather than numericised records. Submitted `026` and `343/1` remain text through validation and rendering. If Sheets has already discarded leading zeroes, this backend cannot reconstruct them; verify the original Form/Sheet transport using designated test submissions. Age alone is validated as an integer from 1 to 120. Plot, Khasra, RERA and certificate identifiers have no numeric-only restriction.
 
 The NOC address's old heading is an explicit alias. Affidavit supports both `Father’s Name` and the reviewed straight-apostrophe `Father's Name` label. Other wording changes are not guessed. The old combined Affidavit land/location heading is deliberately not accepted: historical rows require the separate Khasra and Project Location fields. All document headings must exist, including columns with optional answers. Duplicate headings resolving to one input are rejected.
-
-## Current Mac pilot check
-
-With the user-provided credentials and spreadsheet ID, read-only checks passed for all three worksheets. The current stored certificate dates matched month/day/year unambiguously; the active YAML now uses `%m/%d/%Y` for each document. The redacted example above deliberately remains an example. Nonblank Document Date transport still needs a designated test because the inspected Document Date cells are blank.
-
-Selected-row dry runs passed for **NOC Responses row 3**, **Affidavit Responses row 2**, and **Consent Responses row 2**. The dry runs made no persistent documents or Sheet writes. The user then explicitly approved generation for these exact rows: all three commands completed with generated=1, no failures and no synchronization errors. Three DOCX files were saved in the configured directories; their ZIP/XML and placeholder checks passed. Visual inspection and the subsequent skip/retry acceptance checks remain pending. Do not reuse these row numbers for unrelated future submissions.
 
 ## CLI commands and exits
 
@@ -175,3 +169,16 @@ File save and Sheet status update are **not one transaction**. Retrying the same
 `run_batch(settings, document_key, rows=None, dry_run=False, worksheet=None, progress=None)` returns `BatchResult` with per-row outcomes, counts, saved paths and synchronization errors. An optional callback receives each `RowOutcome`; callback failure is logged without aborting document processing. The desktop calls this interface without importing any GUI code into the backend.
 
 Adding a new document requires a versioned adapter/field contract, template, explicit registry entry and YAML entry. The shared processor and CLI generation path contain no per-document branches. The desktop application uses this same extension interface. Its generic tab component requires no document-specific UI functions; packaging includes templates explicitly, and the installer preserves existing runtime settings.
+
+## Published source and local files
+
+The repository includes application source, adapters, document templates, offline
+tests and fixtures, `FORM_SPEC.md`, the redacted configuration example, build and
+installer scripts, and deployment documentation. Tests and the Form specification
+are required by the Windows build and must remain in the repository.
+
+Internal implementation plans and notes stay local and are ignored, along with
+credentials, active configuration, virtual environments, generated documents, logs
+and build output. Put additional private development notes in `local-notes/`.
+The installer uses `config.example.yaml` only as an initial seed; provision the
+active `config.yaml` and credentials separately as described in the deployment guide.

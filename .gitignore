@@ -19,6 +19,14 @@ coverage.xml
 venv/
 env/
 .build-venv/
+.venv-*/
+
+# Internal working notes: keep locally, exclude from the published source
+/CODEX_PHASE1_IMPLEMENTATION_PLAN.md
+/IMPLEMENTATION_NOTES.md
+/local-notes/
+/.agents/
+/.codex/
 
 # Secrets and private runtime configuration
 credentials.json
