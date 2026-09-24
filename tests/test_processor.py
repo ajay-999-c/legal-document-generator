@@ -6,7 +6,7 @@ from processor import run_batch
 from document_registry import SPECS
 from tests.helpers import FakeSheet, values
 
-@pytest.mark.parametrize('key',list(SPECS))
+@pytest.mark.parametrize('key', ('noc', 'affidavit', 'consent'))
 def test_statuses_physical_rows_second_run(settings,key):
     records=[values(key),None,{**values(key),'processing_status':' eRrOr '},*[{**values(key),'processing_status':s} for s in ('PROCESSING','GENERATED','other')]]
     sheet=FakeSheet(key,records); original=[list(row) for row in sheet.data]; events=[]

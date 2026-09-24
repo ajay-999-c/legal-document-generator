@@ -29,6 +29,11 @@ class DocumentSpec:
     fields: tuple[Field, ...]
     context_builder: Callable[[dict[str, str]], dict]
     template_check: Callable[[dict[str, str]], None] | None = None
+    # Dynamic adapters may declare loop expressions separately from flat inputs.
+    template_placeholders: frozenset[str] | None = None
+    preflight_values: tuple[tuple[str, str], ...] = ()
+    header_check: Callable[[list[str]], None] | None = None
+    row_check: Callable[[dict[str, str]], None] | None = None
 
 
 @dataclass(frozen=True)

@@ -519,3 +519,183 @@ For each Form:
 | **Total** |  | **55** | **51** | **4** |
 
 This requiredness reflects the current Google Forms rather than the older standalone application defaults.
+
+# Phase 1 backend extension — 24 September 2026
+
+This section extends the historical three-Form specification above. The new
+backend keys are `registration`, `by_law`, and `form_a_registration`.
+The original three mappings and templates remain unchanged.
+
+The contract combines the user's final address/role/table instructions, the
+actual templates in this project, and read-only header inspection of the configured
+spreadsheet on 24 September 2026. Heading matching retains the shared NFC,
+case/whitespace/slash normalization. No fuzzy or unreviewed aliases are added.
+Trailing spaces found in live headings are normalized by the existing mapper.
+
+Requiredness references recovered from Drive:
+- [Registration field specification](https://docs.google.com/spreadsheets/d/1kIXNHY42C8Te8JnuWMmW0Ogq_KJSqgFyeBlTIKfeFFc/edit)
+- [Form-A field specification](https://docs.google.com/spreadsheets/d/1VvMbeWNkRTwt1zlSog4ub0WCxjgwiAnh5aB7EzY39ms/edit)
+
+These reference tables predate the final combined-address revision. The user's
+final instructions supersede their removed Khasra/project-location questions,
+Registration Document Date, and Registration signatory designation. All retained
+Registration fields are required; the combined address is treated as required in
+place of the two required address components. Form-A email is optional in the
+source table; other retained scalars and committee members 1–5 are required.
+The live Form required flags themselves have not been inspected in a browser.
+
+| Key | Worksheet | Actual template | Inputs | Unconditionally required |
+| --- | --- | --- | ---: | ---: |
+| `registration` | Registration Responses | `Registration_Template.docx` | 7 | 7 |
+| `by_law` | By-Law Responses | `By_Law_Template.docx` | 3 | 3 |
+| `form_a_registration` | Form A Registration Responses | `Form_A_Registration_Template.docx` | 59 | 34 |
+
+Each worksheet also requires `Timestamp` as Form metadata in the live contract
+and the four operational columns `processing_status`, `generated_file`,
+`processed_at`, `error_message`. Timestamp is not a document input. As before,
+operational headings must each occur exactly once; the backend locates them by
+name rather than fixed positions. Every mapped input column must exist even when
+its answers are optional.
+
+## Registration explicit mappings
+
+| Google Sheet heading | Backend parameter | Template placeholder or context path | Required |
+| --- | --- | --- | --- |
+| Authority Location / सक्षम प्राधिकारी का स्थान | `authority_location` | `authority_location` | Yes |
+| Project Name / परियोजना का नाम | `project_name` | `project_name` | Yes |
+| Association Address | `association_address` | `association_address` | Yes |
+| Police Station / पुलिस थाना | `police_station` | `police_station` | Yes |
+| Association / Society Name / एसोसिएशन / संस्था का नाम | `association_name` | `association_name` | Yes |
+| Place / स्थान | `place` | `place` | Yes |
+| Signatory Name / हस्ताक्षरकर्ता का नाम | `signatory_name` | `signatory_name` | Yes |
+
+## By-Law explicit mappings
+
+| Google Sheet heading | Backend parameter | Template placeholder or context path | Required |
+| --- | --- | --- | --- |
+| Association Name / संस्था का नाम | `association_name` | `association_name` | Yes |
+| Association Address / संस्था का पंजीकृत पता | `association_address` | `association_address` | Yes |
+| Work Area / संस्था का कार्यक्षेत्र | `work_area` | `work_area` | Yes |
+
+## Form-A explicit mappings
+
+| Google Sheet heading | Backend parameter | Template placeholder or context path | Required |
+| --- | --- | --- | --- |
+| Association Name / प्रस्तावित संस्था का नाम | `association_name` | `association_name` | Yes |
+| Association Address / संस्था का पता | `association_address` | `association_address` | Yes |
+| Work Area / कार्यक्षेत्र | `work_area` | `work_area` | Yes |
+| Share Capital / अंश पूंजी | `share_capital` | `share_capital` | Yes |
+| Price Per Share / प्रति अंश कीमत | `price_per_share` | `price_per_share` | Yes |
+| Number of Members / सदस्यों की संख्या | `member_count` | `member_count` | Yes |
+| Association Email / संस्था ईमेल | `association_email` | `association_email` | No |
+| Project Name / परियोजना का नाम | `project_name` | `project_name` | Yes |
+| Completion Certificate Number / पूर्णता प्रमाण-पत्र क्रमांक | `completion_certificate_no` | `completion_certificate_no` | Yes |
+| Completion Certificate Date / पूर्णता प्रमाण-पत्र दिनांक | `completion_certificate_date` | `completion_certificate_date` | Yes |
+| District / जिला | `district_name` | `district_name` | Yes |
+| Management Committee Address / प्रबंध कार्यकारिणी का पता | `management_committee_address` | `management_committee_address` | Yes |
+| Meeting Chairperson Name / बैठक अध्यक्ष का नाम | `meeting_chairperson_name` | `meeting_chairperson_name` | Yes |
+| Proposed By / प्रस्ताव रखने वाले का नाम | `proposed_by` | `proposed_by` | Yes |
+| Approved By / अनुमोदन करने वाले का नाम | `approved_by` | `approved_by` | Yes |
+| Committee Member 1 Name / समिति सदस्य 1 का नाम | `committee_member_1_name` | `committee_members[0].name` | Yes |
+| Committee Member 1 Designation / समिति सदस्य 1 का पद | `committee_member_1_designation` | `committee_members[0].designation` | Yes |
+| Committee Member 1 Plot Number / समिति सदस्य 1 भूखंड क्रमांक | `committee_member_1_plot_no` | `committee_members[0].plot_no` | Yes |
+| Committee Member 1 Mobile Number / समिति सदस्य 1 मोबाइल नंबर | `committee_member_1_mobile` | `committee_members[0].mobile` | Yes |
+| Committee Member 2 Name / समिति सदस्य 2 का नाम | `committee_member_2_name` | `committee_members[1].name` | Yes |
+| Committee Member 2 Designation / समिति सदस्य 2 का पद | `committee_member_2_designation` | `committee_members[1].designation` | Yes |
+| Committee Member 2 Plot Number / समिति सदस्य 2 भूखंड क्रमांक | `committee_member_2_plot_no` | `committee_members[1].plot_no` | Yes |
+| Committee Member 2 Mobile Number / समिति सदस्य 2 मोबाइल नंबर | `committee_member_2_mobile` | `committee_members[1].mobile` | Yes |
+| Committee Member 3 Name / समिति सदस्य 3 का नाम | `committee_member_3_name` | `committee_members[2].name` | Yes |
+| Committee Member 3 Designation / समिति सदस्य 3 का पद | `committee_member_3_designation` | `committee_members[2].designation` | Yes |
+| Committee Member 3 Plot Number / समिति सदस्य 3 भूखंड क्रमांक | `committee_member_3_plot_no` | `committee_members[2].plot_no` | Yes |
+| Committee Member 3 Mobile Number / समिति सदस्य 3 मोबाइल नंबर | `committee_member_3_mobile` | `committee_members[2].mobile` | Yes |
+| Committee Member 4 Name / समिति सदस्य 4 का नाम | `committee_member_4_name` | `committee_members[3].name` | Yes |
+| Committee Member 4 Designation / समिति सदस्य 4 का पद | `committee_member_4_designation` | `committee_members[3].designation` | Yes |
+| Committee Member 4 Plot Number / समिति सदस्य 4 भूखंड क्रमांक | `committee_member_4_plot_no` | `committee_members[3].plot_no` | Yes |
+| Committee Member 4 Mobile Number / समिति सदस्य 4 मोबाइल नंबर | `committee_member_4_mobile` | `committee_members[3].mobile` | Yes |
+| Committee Member 5 Name / समिति सदस्य 5 का नाम | `committee_member_5_name` | `committee_members[4].name` | Yes |
+| Committee Member 5 Designation / समिति सदस्य 5 का पद | `committee_member_5_designation` | `committee_members[4].designation` | Yes |
+| Committee Member 5 Plot Number / समिति सदस्य 5 भूखंड क्रमांक | `committee_member_5_plot_no` | `committee_members[4].plot_no` | Yes |
+| Committee Member 5 Mobile Number / समिति सदस्य 5 मोबाइल नंबर | `committee_member_5_mobile` | `committee_members[4].mobile` | Yes |
+| Committee Member 6 Name / समिति सदस्य 6 का नाम | `committee_member_6_name` | `committee_members[5].name` | No; all four required if member supplied |
+| Committee Member 6 Designation / समिति सदस्य 6 का पद | `committee_member_6_designation` | `committee_members[5].designation` | No; all four required if member supplied |
+| Committee Member 6 Plot Number / समिति सदस्य 6 भूखंड क्रमांक | `committee_member_6_plot_no` | `committee_members[5].plot_no` | No; all four required if member supplied |
+| Committee Member 6 Mobile Number / समिति सदस्य 6 मोबाइल नंबर | `committee_member_6_mobile` | `committee_members[5].mobile` | No; all four required if member supplied |
+| Committee Member 7 Name / समिति सदस्य 7 का नाम | `committee_member_7_name` | `committee_members[6].name` | No; all four required if member supplied |
+| Committee Member 7 Designation / समिति सदस्य 7 का पद | `committee_member_7_designation` | `committee_members[6].designation` | No; all four required if member supplied |
+| Committee Member 7 Plot Number / समिति सदस्य 7 भूखंड क्रमांक | `committee_member_7_plot_no` | `committee_members[6].plot_no` | No; all four required if member supplied |
+| Committee Member 7 Mobile Number / समिति सदस्य 7 मोबाइल नंबर | `committee_member_7_mobile` | `committee_members[6].mobile` | No; all four required if member supplied |
+| Committee Member 8 Name / समिति सदस्य 8 का नाम | `committee_member_8_name` | `committee_members[7].name` | No; all four required if member supplied |
+| Committee Member 8 Designation / समिति सदस्य 8 का पद | `committee_member_8_designation` | `committee_members[7].designation` | No; all four required if member supplied |
+| Committee Member 8 Plot Number / समिति सदस्य 8 भूखंड क्रमांक | `committee_member_8_plot_no` | `committee_members[7].plot_no` | No; all four required if member supplied |
+| Committee Member 8 Mobile Number / समिति सदस्य 8 मोबाइल नंबर | `committee_member_8_mobile` | `committee_members[7].mobile` | No; all four required if member supplied |
+| Committee Member 9 Name / समिति सदस्य 9 का नाम | `committee_member_9_name` | `committee_members[8].name` | No; all four required if member supplied |
+| Committee Member 9 Designation / समिति सदस्य 9 का पद | `committee_member_9_designation` | `committee_members[8].designation` | No; all four required if member supplied |
+| Committee Member 9 Plot Number / समिति सदस्य 9 भूखंड क्रमांक | `committee_member_9_plot_no` | `committee_members[8].plot_no` | No; all four required if member supplied |
+| Committee Member 9 Mobile Number / समिति सदस्य 9 मोबाइल नंबर | `committee_member_9_mobile` | `committee_members[8].mobile` | No; all four required if member supplied |
+| Committee Member 10 Name / समिति सदस्य 10 का नाम | `committee_member_10_name` | `committee_members[9].name` | No; all four required if member supplied |
+| Committee Member 10 Designation / समिति सदस्य 10 का पद | `committee_member_10_designation` | `committee_members[9].designation` | No; all four required if member supplied |
+| Committee Member 10 Plot Number / समिति सदस्य 10 भूखंड क्रमांक | `committee_member_10_plot_no` | `committee_members[9].plot_no` | No; all four required if member supplied |
+| Committee Member 10 Mobile Number / समिति सदस्य 10 मोबाइल नंबर | `committee_member_10_mobile` | `committee_members[9].mobile` | No; all four required if member supplied |
+| Committee Member 11 Name / समिति सदस्य 11 का नाम | `committee_member_11_name` | `committee_members[10].name` | No; all four required if member supplied |
+| Committee Member 11 Designation / समिति सदस्य 11 का पद | `committee_member_11_designation` | `committee_members[10].designation` | No; all four required if member supplied |
+| Committee Member 11 Plot Number / समिति सदस्य 11 भूखंड क्रमांक | `committee_member_11_plot_no` | `committee_members[10].plot_no` | No; all four required if member supplied |
+| Committee Member 11 Mobile Number / समिति सदस्य 11 मोबाइल नंबर | `committee_member_11_mobile` | `committee_members[10].mobile` | No; all four required if member supplied |
+
+## Final address and Registration contract
+
+All three documents use `association_address` as one complete value. It is
+trimmed at its outer boundary, XML-escaped by the shared renderer, and otherwise
+neither split nor reconstructed. There is no `khasra_number` or
+`project_location` mapping for any of these three documents. `work_area` is an
+independent input for By-Law and Form-A.
+
+Registration's actual live address heading is **Association Address**, not the
+bilingual heading in the request. Its association-name heading is
+**Association / Society Name / एसोसिएशन / संस्था का नाम**. The mappings above use
+those exact observed headings. There is no Registration Document Date input or
+placeholder; the existing template's static date line stays unchanged.
+
+By-Law maps each of its three fields once; the template repeats association_name
+in two locations using that one mapping. The supplied full By-Law is not a
+one-page template: it contains 231 paragraphs, an explicit page break, and a
+cached Word page count of 11. Preserving it takes precedence over shrinking the
+legal text. Tests verify successful DOCX generation and unchanged formatting;
+they do not assert a false one-page count. Current pagination needs Word review.
+
+## Form-A validation and derived content
+
+- Members 1–5 require all four values. For members 6–11, four blanks omit the
+  member; any supplied value requires all four. Whitespace-only values are blank.
+- Optional members must be contiguous. Member 6 blank followed by populated
+  member 7 is rejected. Unsupported committee columns, including member 12, are
+  rejected. Duplicate or ambiguous mapped headings are rejected by the shared
+  mapper. Each name remains intact, including any father-name text it contains.
+- `committee_members` is the single ordered list used by all three repeated
+  committee tables and the final member table. No duplicate committee lists,
+  father-name fields, or committee email fields are created.
+- `member_count` accepts positive ASCII whole-number strings, including a zero
+  fractional part (`85`, `085`, `85.0`). Fractions, signs, exponents, separators,
+  zero, and counts below the populated committee length are rejected. It becomes
+  an integer in the rendering context. Committee length is 5–11.
+- The final table has exactly `member_count` data rows, excluding its heading row.
+  Committee names/designations/plots occupy the first rows. Remaining rows have
+  blank name, plot and signature cells and designation `सदस्य`. All signature
+  cells remain blank. Ordinary members have no Form inputs.
+- First Signatory Name and Authorized Committee President both use
+  `committee_members[0].name`; First Signatory Mobile uses
+  `committee_members[0].mobile`. These are template references, not extra fields.
+- Meeting chairperson, proposer, and approver are independent required inputs.
+  Repeated people are allowed. No committee index determines a meeting role.
+- Meeting date is the template literal `.............` (13 dots), with no context
+  key or Google Form question. Preflight rejects altered dot counts.
+- `share_capital` and `price_per_share` are direct text inputs. No calculation is
+  inferred. `association_email` may be blank. Completion-certificate date is
+  required and follows the configured explicit date convention.
+
+The supplied Form-A already uses four `docxtpl` row loops: three over
+`committee_members` and one over `range(member_count)`. Its final cells select
+committee data by index, otherwise emit blanks/`सदस्य`. Adapter preflight checks
+the exact loop directives and complete expression inventory (including
+`loop.index`, `"%02d"|format(loop.index)`, `member.name`, `member.designation`,
+`member.plot_no`, `member.mobile`, and indexed committee references). Shared
+StrictUndefined and unresolved-tag checks remain active. No template was edited.

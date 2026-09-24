@@ -1,14 +1,23 @@
 # Legal Document Generator
 
-Shared backend, CLI and Tkinter desktop application for the existing NOC, Affidavit, and Consent Forms. Each document uses its own worksheet and output directory in one spreadsheet. The current business contract is [FORM_SPEC.md](FORM_SPEC.md), regenerated on 23 September 2026. No legacy application is imported at runtime.
+Shared backend and CLI for six legal document types, with previously implemented Tkinter/Windows support for NOC, Affidavit, and Consent. Registration, By-Law, and Form-A were added for Mac/backend validation only on 24 September 2026. Each document uses its own worksheet and output directory in one spreadsheet. The current business contract is [FORM_SPEC.md](FORM_SPEC.md), including its dated extension section. No legacy application is imported at runtime.
 
 | Key | Worksheet | Inputs | Required | Optional |
 | --- | --- | ---: | ---: | --- |
 | `noc` | `NOC Responses` | 14 | 12 | Document Date, Signatory Role |
 | `affidavit` | `Affidavit Responses` | 17 | 16 | Document Date |
 | `consent` | `Consent Responses` | 24 | 23 | Document Date |
+| `registration` | `Registration Responses` | 7 | 7 | None |
+| `by_law` | `By-Law Responses` | 3 | 3 | None |
+| `form_a_registration` | `Form A Registration Responses` | 59 | 34 | Association Email; members 6–11 conditionally required |
 
 The Tkinter desktop application now adds registry-driven NOC, Affidavit and Consent tabs on this shared backend. Run `.venv/bin/python app.py` from source. Each tab persists its own Save Folder in `config.yaml`; Generate runs only that document in a worker, with one job per application window. Startup performs no Sheets operations. Templates and administrator settings stay out of the office UI.
+
+The new extension does not change or validate Windows UI, packaging, installer,
+or desktop configuration code. The existing desktop is registry-driven, so adding
+enabled entries can expose them when that application is launched; this is not
+Phase-2 acceptance. Use the CLI for the new types during this phase. The existing
+Windows installer seed `config.example.yaml` deliberately remains unchanged.
 
 See [Windows deployment](WINDOWS_DEPLOYMENT.md) for build, installation, configuration, credentials, upgrades and acceptance checks. Windows packaging infrastructure is provided; the Windows executable and installer still require testing on Windows. Automatic polling and scheduled generation are not implemented.
 
@@ -182,3 +191,88 @@ credentials, active configuration, virtual environments, generated documents, lo
 and build output. Put additional private development notes in `local-notes/`.
 The installer uses `config.example.yaml` only as an initial seed; provision the
 active `config.yaml` and credentials separately as described in the deployment guide.
+
+## Mac/backend extension commands and configuration
+
+The active `config.yaml` has these entries under its existing `documents:` map.
+For another Mac installation, add the same entries to its single active file;
+do not create separate configs. Existing keys/settings remain valid. Credentials
+stay in the separately provisioned JSON file.
+
+```yaml
+  registration:
+    enabled: true
+    label: Registration
+    worksheet_name: Registration Responses
+    template_path: templates/Registration_Template.docx
+    output_dir: generated/registration
+    filename_pattern: REGISTRATION_{association_name}_{row_number}.docx
+    input_date_format: '%m/%d/%Y'
+  by_law:
+    enabled: true
+    label: By-Law
+    worksheet_name: By-Law Responses
+    template_path: templates/By_Law_Template.docx
+    output_dir: generated/by_law
+    filename_pattern: BY_LAW_{association_name}_{row_number}.docx
+    input_date_format: '%m/%d/%Y'
+  form_a_registration:
+    enabled: true
+    label: Form-A Registration
+    worksheet_name: Form A Registration Responses
+    template_path: templates/Form_A_Registration_Template.docx
+    output_dir: generated/form_a_registration
+    filename_pattern: FORM_A_REGISTRATION_{association_name}_{row_number}.docx
+    input_date_format: '%m/%d/%Y'
+```
+
+The actual By-Law filename is `By_Law_Template.docx`. None of the three templates
+was edited. All use the complete `association_address`; none needs separate
+Khasra/project-location input. Registration has no Document Date input. See
+[the explicit mappings and required-field contract](FORM_SPEC.md#phase-1-backend-extension--24-september-2026).
+
+Form-A accepts 5–11 complete committee members, with no gaps in optional members
+6–11. Any supplied optional member requires name, designation, plot_no and mobile.
+A single committee list feeds every repeated table and supplies the first
+signatory/president from member 1. The independent meeting roles remain required.
+Meeting date stays 13 literal dots. The final table contains `member_count` data
+rows, with blank ordinary-member cells and `सदस्य` after the committee rows.
+Share capital and share price are independent inputs; association email is optional.
+
+Run offline milestones sequentially, with a full regression run after each:
+
+```bash
+.venv/bin/python -m pytest tests/test_registration.py -q
+.venv/bin/python -m pytest tests -q
+.venv/bin/python -m pytest tests/test_by_law.py -q
+.venv/bin/python -m pytest tests -q
+.venv/bin/python -m pytest tests/test_form_a_registration.py -q
+.venv/bin/python -m pytest tests -q
+.venv/bin/python -m pytest tests/test_extension_integration.py -q
+.venv/bin/python -m pytest tests -q
+
+.venv/bin/python main.py check-sheets --document registration
+.venv/bin/python main.py check-sheets --document by_law
+.venv/bin/python main.py check-sheets --document form_a_registration
+```
+
+After those read-only checks, this inspection selected physical **row 2 in each
+of the three worksheets for dry runs only**:
+
+```bash
+.venv/bin/python main.py generate --document registration --rows 2 --dry-run
+.venv/bin/python main.py generate --document by_law --rows 2 --dry-run
+.venv/bin/python main.py generate --document form_a_registration --rows 2 --dry-run
+```
+
+These row numbers describe this inspection, not a permanent pilot designation.
+Recheck them before a later run. Dry runs use temporary files and never update
+Sheet cells or save production outputs. Removing `--dry-run` is outside the
+approved extension scope and requires explicit approval of the exact worksheet
+and physical row. The shared blank/ERROR retry and nonempty-status skip semantics
+are unchanged.
+
+See [extension validation evidence](PHASE1_EXTENSION_VALIDATION.md) for the test
+counts, exact live headers, worksheet checks, dry-run outcomes, and remaining
+visual/requiredness confirmation limits. The supplied full By-Law is not one
+page; its preserved template contains an explicit page break and 231 paragraphs.

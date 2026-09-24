@@ -13,6 +13,10 @@ from models import RowError, SetupError
 from tests.helpers import values
 from tests.conftest import ROOT
 
+# These fixtures encode the original three Forms (including their optional dates).
+# New document contracts and formatting are covered in their own test modules.
+LEGACY_KEYS = ('noc', 'affidavit', 'consent')
+
 
 def render(key, settings, input_values=None):
     spec = SPECS[key]
@@ -46,7 +50,7 @@ def test_schema_against_business_contract(key,count,required):
         assert field.placeholder==row[7].strip().strip('`')[2:-2].strip()
 
 
-@pytest.mark.parametrize('key', list(SPECS))
+@pytest.mark.parametrize('key', LEGACY_KEYS)
 def test_actual_template_render_text_and_format(settings,key):
     preflight_template(SPECS[key], settings.documents[key], settings)
     data, context, output=render(key,settings)
@@ -79,7 +83,7 @@ def test_actual_template_render_text_and_format(settings,key):
         assert len(context['members'])==5
 
 
-@pytest.mark.parametrize('key,param', [(key,f.parameter) for key,s in SPECS.items() for f in s.fields if f.required])
+@pytest.mark.parametrize('key,param', [(key,f.parameter) for key in LEGACY_KEYS for f in SPECS[key].fields if f.required])
 def test_every_required_field_rejected(settings,key,param):
     data=values(key); data[param]=' \n\t '
     with pytest.raises(RowError,match=param):
@@ -97,7 +101,7 @@ def test_noc_city_is_never_rewritten(settings,association):
                                    if key.startswith('__paragraph__')]
 
 
-@pytest.mark.parametrize('key',list(SPECS))
+@pytest.mark.parametrize('key', LEGACY_KEYS)
 def test_identifiers_xml_and_multiline(settings,key):
     data=values(key)
     field=next(f.parameter for f in SPECS[key].fields if f.kind=='text')

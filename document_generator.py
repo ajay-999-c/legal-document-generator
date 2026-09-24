@@ -28,6 +28,8 @@ def normalize_header(header):
 
 
 def heading_map(spec, headers):
+    if spec.header_check:
+        spec.header_check(headers)
     accepted = {}
     for field in spec.fields:
         for heading in (field.heading, *field.aliases):
@@ -74,6 +76,10 @@ def validate_values(spec, values, config, settings):
                 raise RowError('age: enter a whole number from 1 to 120.')
             value = str(int(value))
         result[field.parameter] = value
+    if spec.row_check:
+        # Retain extra inputs for adapter validation, while passing cleaned known
+        # values. Returned values remain the explicit field contract only.
+        spec.row_check({**values, **result})
     return result
 
 
@@ -98,7 +104,9 @@ def template_expressions(parts):
 
 def synthetic_values(spec, config):
     """Only used for local preflight; never a substitute for respondent data."""
-    return {f.parameter: (datetime(2026, 9, 23).strftime(config.input_date_format) if f.kind == 'date' else '35' if f.kind == 'age' else 'TEST_' + f.parameter) for f in spec.fields}
+    values = {f.parameter: (datetime(2026, 9, 23).strftime(config.input_date_format) if f.kind == 'date' else '35' if f.kind == 'age' else 'TEST_' + f.parameter) for f in spec.fields}
+    values.update(spec.preflight_values)
+    return values
 
 
 def render_bytes(template, context):
@@ -125,7 +133,9 @@ def preflight_template(spec, config, settings):
             raise SetupError(f'{spec.key}: template file is missing.')
         parts = xml_parts(config.template_path)
         found = set(template_expressions(parts))
-        expected = {re.sub(r'\s+', '', f.placeholder) for f in spec.fields}
+        placeholders = (spec.template_placeholders if spec.template_placeholders is not None
+                        else (f.placeholder for f in spec.fields))
+        expected = {re.sub(r'\s+', '', placeholder) for placeholder in placeholders}
         if found != expected:
             # Never print unknown template text, which could contain confidential literals.
             raise SetupError(f'{spec.key}: template placeholder mismatch ({len(expected-found)} missing, {len(found-expected)} unexpected).')
