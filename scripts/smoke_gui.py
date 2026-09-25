@@ -9,15 +9,18 @@ from app import create_application
 from desktop_config import DesktopConfig
 from models import BatchResult, RowOutcome
 from tests.conftest import config_data, settings
+from tests.test_desktop_six import six_config, KEYS, LABELS
 
 
 def main():
     with TemporaryDirectory(prefix='legal-gui-smoke-') as temp:
-        synthetic = settings.__wrapped__(Path(temp), config_data.__wrapped__())
+        synthetic = settings.__wrapped__(Path(temp), six_config(config_data.__wrapped__()))
         root = tk.Tk()
         controller = create_application(root, DesktopConfig(synthetic.config_path))
         assert controller is not None
-        assert list(controller.tabs) == ['noc', 'affidavit', 'consent']
+        assert tuple(controller.tabs) == KEYS
+        assert tuple(controller.tabs[k].master.tab(controller.tabs[k], "text") for k in KEYS) == LABELS
+        assert len({t.folder.get() for t in controller.tabs.values()}) == 6
         calls = []
         def fake_processor(configuration, key, progress):
             calls.append(key)
@@ -35,34 +38,39 @@ def main():
                 assert tab.winfo_width() > 1
                 assert tab.generate_button.winfo_reqwidth() > 1
                 assert str(tab.generate_button.cget('state')) != 'disabled'
-            controller.tabs['affidavit'].generate_button.invoke()
+            controller.tabs[KEYS[len(calls)]].generate_button.invoke()
             assert all(str(t.generate_button.cget('state')) == 'disabled' for t in controller.tabs.values())
             root.after(200, finish)
         def finish():
             if controller.active_key:
                 root.after(100, finish)
                 return
-            assert calls == ['affidavit']
-            assert controller.tabs['affidavit'].status.get() == 'Generation complete'
-            assert controller.tabs['affidavit'].counts['generated'].get() == 'Generated: 1'
-            assert controller.tabs['noc'].status.get() == 'Ready'
-            assert controller.tabs['consent'].status.get() == 'Ready'
+            key = calls[-1]
+            assert controller.tabs[key].status.get() == 'Generation complete'
+            assert controller.tabs[key].counts['generated'].get() == 'Generated: 1'
+            for pending in KEYS[len(calls):]:
+                assert controller.tabs[pending].status.get() == 'Ready'
             assert all(str(t.generate_button.cget('state')) == 'normal' for t in controller.tabs.values())
-            controller.close()
+            if len(calls) < len(KEYS):
+                notebook.select(len(calls))
+                root.after(100, check)
+            else:
+                assert tuple(calls) == KEYS
+                controller.close()
         # Display every page before checking geometry of hidden notebook children.
         notebook = controller.tabs['noc'].master
         def show(index=0):
             notebook.select(index)
-            if index < 2:
+            if index < len(KEYS) - 1:
                 root.after(200, lambda: show(index + 1))
             else:
                 root.after(200, check)
         root.after(200, show)
-        root.after(10000, lambda: report_error(RuntimeError, RuntimeError('Smoke test timed out'), None))
+        root.after(20000, lambda: report_error(RuntimeError, RuntimeError('Smoke test timed out'), None))
         root.mainloop()
         if failures:
             raise failures[0]
-        print('PASS: real Tk window, three tabs, layout, fake worker, controls and main-thread completion; no Sheets access.')
+        print('PASS: real Tk window, six tabs in order, independent folders, layout, six fake workers, controls and main-thread completion; no Sheets access.')
 
 
 if __name__ == '__main__':

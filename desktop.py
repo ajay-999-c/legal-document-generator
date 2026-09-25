@@ -18,6 +18,7 @@ from tkinter import filedialog, messagebox, ttk
 from document_registry import SPECS
 from models import SetupError
 from processor import run_batch
+from runtime_paths import UNCONFIGURED_SPREADSHEET_ID
 
 logger = logging.getLogger('legal_generator')
 
@@ -152,6 +153,8 @@ class DesktopController:
         self.tabs[key].set_status('Connecting to Google Sheets…')
         try:
             settings = self.store.load()
+            if settings.spreadsheet_id == UNCONFIGURED_SPREADSHEET_ID:
+                raise SetupError('Administrator must configure the spreadsheet ID before generation.')
             # A configuration edited by an administrator requires a restart so the
             # displayed destination/available tabs cannot disagree with the batch.
             if settings != self.settings:

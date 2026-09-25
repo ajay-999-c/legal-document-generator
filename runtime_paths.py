@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 
 APP_ID = 'LegalDocumentGenerator'
+UNCONFIGURED_SPREADSHEET_ID = 'UNCONFIGURED_LEGAL_DOCUMENT_GENERATOR'
 SOURCE_ROOT = Path(__file__).resolve().parent
 
 
@@ -29,9 +30,9 @@ def data_directory():
 
 
 def config_path():
-    # Source Windows builds can use the project configuration for development;
-    # installed/frozen builds always use the single per-user runtime configuration.
-    return (data_directory() if is_frozen() else SOURCE_ROOT) / 'config.yaml'
+    # Windows source and packaged GUI share one per-user configuration. CLI paths
+    # are owned by config_manager and remain unchanged.
+    return (data_directory() if is_windows() or is_frozen() else SOURCE_ROOT) / 'config.yaml'
 
 
 def documents_directory():

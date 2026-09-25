@@ -13,6 +13,7 @@ $DataDir = Join-Path $env:APPDATA $AppId
 $TargetExe = Join-Path $InstallDir 'Legal Document Generator.exe'
 $ConfigPath = Join-Path $DataDir 'config.yaml'
 $CredentialPath = Join-Path $DataDir 'credentials.json'
+$BackupExe = Join-Path $InstallDir 'Legal Document Generator.exe.previous'
 
 if (-not (Test-Path -LiteralPath $SourceExe -PathType Leaf)) { throw 'Source executable is missing. Build first or supply -SourceExe.' }
 if (-not (Test-Path -LiteralPath $ConfigPath) -and -not (Test-Path -LiteralPath $ConfigSeed -PathType Leaf)) { throw 'Initial config seed is missing.' }
@@ -29,7 +30,7 @@ $Stage = Join-Path $InstallDir 'Legal Document Generator.exe.new'
 Copy-Item -LiteralPath $SourceExe -Destination $Stage -Force
 try {
     if (Test-Path -LiteralPath $TargetExe) {
-        [System.IO.File]::Replace($Stage, $TargetExe, $null)
+        [System.IO.File]::Replace($Stage, $TargetExe, $BackupExe)
     } else {
         [System.IO.File]::Move($Stage, $TargetExe)
     }
@@ -69,3 +70,5 @@ foreach ($ShortcutDir in @($DesktopDir, $ProgramsDir)) {
 Write-Host "Installed: $TargetExe"
 Write-Host "Runtime data: $DataDir"
 Write-Host 'Desktop and Start-menu shortcuts created. Existing settings and credentials preserved.'
+Write-Host 'On upgrade, the previous executable is retained beside the new EXE for rollback.'
+Write-Host 'For older three-document configs, an administrator must merge the three missing entries from config.example.yaml; existing settings are not replaced.'

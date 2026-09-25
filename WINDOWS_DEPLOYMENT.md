@@ -7,27 +7,29 @@ occurs. The Windows executable must be built **on Windows**, not on macOS.
 
 ## Build machine
 
-Use **64-bit Python 3.14** (the office Windows version) or **3.11**, including
-Tcl/Tk and pip. The build script accepts these two versions and requires the full
-offline suite to pass. Python 3.14 Windows application/build validation is pending;
-PyInstaller 6.22.3 includes Python 3.14 support, added in
-[PyInstaller 6.15](https://pyinstaller.org/en/stable/CHANGES.html). The source GUI has been smoke-tested on
-macOS with the existing project Python 3.11.0/Tk 8.6. Windows binary, installer,
-Word rendering and production access still require the acceptance checks below.
+Use **64-bit Python 3.11**, including Tcl/Tk and pip, matching the validated
+macOS Python major/minor version (3.11.0). Python 3.14 was mentioned in the earlier
+three-document deployment notes; it is not a validated build target for this release.
+Build on a Windows machine under a standard user account with internet access for
+package installation. Office PCs running the EXE do not need Python installed.
 
-From PowerShell in this project (do not reuse a Mac or sibling virtual environment):
+Clone/copy the complete project, including `tests/`, `FORM_SPEC_FINAL.md`, all six
+production templates and the maintained spec. Do not copy the Mac `.venv`, credentials,
+active config, generated documents or logs into the build checkout. From PowerShell:
 
 ```powershell
-py -3.14 -m venv .venv
+cd C:\path\to\legal-document-generator
+py -3.11 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe -m pip install -r requirements-build.txt
+.\.venv\Scripts\python.exe -m pytest tests -q
 .\build_windows.bat
 ```
 
-If your project `.venv` already uses Python 3.14, keep it and skip creation. For a
-3.11 build, use `py -3.11` instead. Installing another global interpreter does not
-change an existing virtual environment.
+Skip environment creation only if this project's `.venv` already uses 64-bit Python
+3.11. Installing another interpreter does not change an existing environment.
 
-The batch file uses `.venv\Scripts\python.exe`, checks dependencies, runs the
+The batch file uses `.venv\Scripts\python.exe`, installs the pinned build requirements, checks dependencies, runs the
 complete offline suite, stops on failure, and runs the reviewed PyInstaller spec.
 The resulting file is:
 
@@ -36,16 +38,47 @@ dist\Legal Document Generator.exe
 ```
 
 It is a one-file, windowed/no-console application containing Python, Tcl/Tk,
-application modules, dependencies and all `templates/*.docx` files (excluding Word
-lock files). The spec includes only explicit template assets and library resources;
+application modules, dependencies, the safe `config.example.yaml` seed and exactly
+the six production templates named in that seed (table below). Stray/temporary
+templates and Word lock files are not included. The spec checks the seed against
+the registry and rejects missing production templates;
 it does not bundle the office `config.yaml`, credentials, logs, generated documents
-or tests. Inspect the release artifact before distribution. A failed build may
+or tests. Inspect the release artifact before distribution. After tests pass, the script removes only the previous target EXE, then uses
+PyInstaller `--clean --noconfirm` to refresh build work/cache. A failed preflight may
 leave an older EXE in `dist`; distribute only after the script reports success.
 No Windows EXE is produced or claimed by the Mac development pass.
 
 PyInstaller's [runtime resource rules](https://pyinstaller.org/en/stable/runtime-information.html)
 and [spec-file data inclusion](https://pyinstaller.org/en/stable/spec-files.html)
 are used to keep extracted templates separate from writable AppData settings.
+
+## Direct EXE smoke test before installation
+
+On a clean Windows test account, start the EXE from a different current directory:
+
+```powershell
+& 'C:\path\to\legal-document-generator\dist\Legal Document Generator.exe'
+```
+
+Confirm no console window appears. Startup requires no network and performs no
+Sheets access. If AppData config is absent, the bundled seed provisions it exclusively,
+then persists six independent output defaults under the user's Documents directory.
+The seed's `UNCONFIGURED_LEGAL_DOCUMENT_GENERATOR` value passes local schema loading
+but is explicitly blocked by the desktop before any generation worker starts. Six
+tabs can be inspected before admin setup; do not click Generate against production
+for a packaging smoke test. Existing config and credentials are preserved.
+
+| Tab order / label | Backend key | Bundled template | Default Documents subfolder |
+| --- | --- | --- | --- |
+| 1. NOC | noc | Noc_Template.docx | NOC Documents |
+| 2. Affidavit | affidavit | Affidavit_Template.docx | Affidavit Documents |
+| 3. Consent | consent | Consent_Template.docx | Consent Documents |
+| 4. Registration | registration | Registration_Template.docx | Registration Documents |
+| 5. By-Law | by_law | By_Law_Template.docx | By-Law Documents |
+| 6. Form-A Registration | form_a_registration | Form_A_Registration_Template.docx | Form-A Registration Documents |
+
+The generic DocumentTab/Notebook uses the registry's explicit tuple order, independent
+of YAML key order. No per-document UI implementation is needed.
 
 ## Install for the office user
 
@@ -92,13 +125,15 @@ even if `-ConfigSeed` or `-CredentialsFile` is supplied during an upgrade.
 
 1. Open `%APPDATA%\LegalDocumentGenerator\config.yaml` in a text editor.
 2. Set `google.spreadsheet_id` to the actual bare spreadsheet ID. The shipped
-   placeholder is deliberately invalid, so generation cannot run until configured.
+   setup sentinel is blocked by the desktop, so generation cannot run until configured.
+   Do not use the unconfigured seed with the CLI.
 3. Keep `credentials_file: credentials.json` for the default location. Provision
    the existing service-account JSON separately; never paste private-key contents
    into YAML. An explicit absolute credential path is also supported.
-4. Confirm the three existing worksheets: `NOC Responses`, `Affidavit Responses`,
-   and `Consent Responses`. Preserve their input headings, operational columns,
-   adapter keys, mappings and status semantics from `FORM_SPEC.md`.
+4. Confirm the six existing worksheets: `NOC Responses`, `Affidavit Responses`,
+   `Consent Responses`, `Registration Responses`, `By-Law Responses`, and
+   `Form A Registration Responses`. Preserve their input headings, operational columns,
+   adapter keys, mappings and status semantics from `FORM_SPEC_FINAL.md`.
 5. Share the spreadsheet with the service account's email as **Editor**, using
    Google Sheets' Share dialog. An administrator obtains this email from the
    credential file securely; the app does not display it. Ensure the Google Sheets
@@ -112,7 +147,9 @@ even if `-ConfigSeed` or `-CredentialsFile` is supplied during an upgrade.
 8. Leave `output_dir: ''` for per-document defaults, or set explicit destination
    paths. On the first successful configuration load, blank/missing output settings
    are filled and persisted as `Documents\NOC Documents`,
-   `Documents\Affidavit Documents`, and `Documents\Consent Documents`. Windows'
+   `Documents\Affidavit Documents`, `Documents\Consent Documents`,
+   `Documents\Registration Documents`, `Documents\By-Law Documents`, and
+   `Documents\Form-A Registration Documents`. Windows'
    redirected Documents location is respected. Existing explicit paths are kept,
    even if their folders have not yet been created. Generation creates them after
    backend preflight; Browse selects an existing directory.
@@ -131,7 +168,8 @@ store it in a shared output directory.
 
 Launch **Legal Document Generator** from Desktop or Start. Startup reads local
 configuration only; it does not authenticate, generate files or mutate Sheets.
-An invalid/missing configuration displays a concise Setup error. Have an
+An absent Windows configuration is provisioned from the safe seed. Invalid existing
+configuration displays a concise Setup error and is never replaced by the seed. Have an
 administrator fix the active YAML and restart. Missing credentials/templates and
 remote access/schema problems are caught when generation is requested, without
 crashing other tabs.
@@ -172,13 +210,33 @@ updates are not a transaction; review uncertain rows/files before any retry.
 3. Build/test the new version on Windows and distribute the new EXE plus installer.
 4. Run the same install command as the same office user. The installer refuses if
    an application process is still running and stages the EXE before replacement.
-5. Confirm existing `config.yaml`, credentials and selected output directories
+5. For an older three-document installation, an administrator must merge only the
+   missing `registration`, `by_law`, and `form_a_registration` entries from the new
+   seed into the existing `documents` map before expecting six tabs. Keep the real
+   spreadsheet ID, credentials path and all existing selected output folders. Do not
+   replace the whole YAML with the seed. No silent business/config migration occurs.
+6. Confirm existing `config.yaml`, credentials and selected output directories
    remain unchanged, then launch and perform the local acceptance checks.
 
 The installer never silently migrates settings or replaces credentials. If a new
 release adds a document, the administrator adds its reviewed entry to the existing
 YAML; old settings are not replaced with the seed. Adding a document requires an
 adapter, registry entry, template and YAML entry, with no new tab implementation.
+
+## Rollback
+
+The installer retains the previous EXE as `Legal Document Generator.exe.previous`
+beside the installed executable. Keep a securely backed-up config from before an
+upgrade. Close the application, then restore the prior binary through the installer:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install_windows.ps1 -SourceExe "$env:LOCALAPPDATA\Programs\LegalDocumentGenerator\Legal Document Generator.exe.previous"
+```
+
+The installer stages that file before replacement and still preserves configuration
+and credentials. Restore a matching backed-up configuration manually only when needed
+for compatibility; never delete runtime data or reset Sheet statuses as a rollback.
+Retain release archives because the one previous-binary backup is replaced on upgrades.
 
 ## Logs and troubleshooting
 
@@ -197,11 +255,11 @@ cannot be written, startup reports Setup error; check the directory's permission
 | Symptom | Administrator action |
 | --- | --- |
 | Tests fail with CP1252 / UnicodeDecodeError | Update the source checkout: fixture, Form specification and test text I/O now explicitly use UTF-8. Do not change or remove the Hindi fixture content. |
-| Build reports an unexpected Python version | The updated script allows 3.11 and 3.14. Check `.\.venv\Scripts\python.exe --version`; the build uses that interpreter, not whichever global Python is installed. |
+| Build reports an unexpected Python version | The updated script requires 64-bit 3.11. Check `.\.venv\Scripts\python.exe --version`; the build uses that interpreter, not whichever global Python is installed. |
 | Setup error on launch | Check the AppData config exists, YAML syntax/unique keys, actual spreadsheet ID, distinct per-document destinations and worksheets. Restart after edits. |
 | Setup error on Generate | Check credential-file presence/validity, Google Sheets API enablement, sharing and exact worksheet name. Inspect exception type/location in logs. |
 | Missing template | Reinstall the correct build; preserve the relative template paths in YAML. Do not copy an absolute Mac path to Windows. |
-| Invalid headings/mapping | Compare existing worksheet headings with `FORM_SPEC.md`; do not alter adapters to guess fields. |
+| Invalid headings/mapping | Compare existing worksheet headings with `FORM_SPEC_FINAL.md`; do not alter adapters to guess fields. |
 | Could not save folder | Select an existing accessible folder distinct from other enabled documents; check config write permissions. The prior setting remains on a failed save. |
 | Output/save failure | Check destination permissions, network drive availability, free space and whether Word has locked the target file. |
 | Row failed | Review the safe row diagnostic and source values; correct data, then deliberately retry eligible ERROR rows. |
@@ -210,7 +268,7 @@ cannot be written, startup reports Setup error; check the directory's permission
 | Configuration edited while open | Restart before generating so displayed folders and processor settings agree. |
 | Window cannot close | Allow the active request/batch to finish. Cloud read retries/timeouts are bounded by the existing backend. |
 | Windows blocks EXE/script | Follow IT signing/allowlisting procedures; inspect build provenance and security alerts. |
-| Missing DLL/Tk or immediate launch failure | Rebuild with the selected Python 3.11/3.14 x64 environment and requirements-build.txt; inspect PyInstaller warnings and test on a clean Windows machine. |
+| Missing DLL/Tk or immediate launch failure | Rebuild with the selected Python 3.11 x64 environment and requirements-build.txt; inspect PyInstaller warnings and test on a clean Windows machine. |
 
 ## Required Windows acceptance before office rollout
 
@@ -219,7 +277,7 @@ cannot be written, startup reports Setup error; check the directory's permission
   templates, redirected Documents defaults and AppData config/log locations.
 - Test missing/invalid config, missing credentials, read-only config/output paths,
   canceled Browse, paths with spaces/Hindi characters and unavailable network drives.
-- Verify all three tabs, independent folder persistence after restart, responsiveness,
+- Verify all six tabs, independent folder persistence after restart, responsiveness,
   one-job guard and close-during-job behavior. Use the source smoke script first:
   `.\.venv\Scripts\python.exe scripts\smoke_gui.py` (fake processor, no cloud).
 - Inspect bundle contents for secrets and confirm startup works without network.
@@ -239,7 +297,28 @@ cannot be written, startup reports Setup error; check the directory's permission
 .venv/bin/python scripts/smoke_gui.py
 ```
 
-Source mode uses the project's `config.yaml` without changing the CLI's paths or
-behavior. The display-required smoke script uses only synthetic temporary settings
+Mac source mode uses the project's `config.yaml`; Windows source GUI and packaged
+GUI use the same AppData config. CLI paths/behavior remain unchanged. Relative GUI
+template paths on Windows resolve from the source resource directory or extracted
+bundle, never the current working directory. The display-required smoke script uses only synthetic temporary settings
 and a fake processor. Normal `app.py` generation is live only after a user clicks
 Generate. Do not run the Windows build on Mac.
+
+
+## Release validation record
+
+The backend's six macOS workflows are live-validated per the operator. This Windows
+phase does not repeat live generation or alter Forms, Sheets, adapters or templates.
+The baseline offline suite passed 426 tests. The six-tab GUI milestone passed 457.
+The real-Tk Mac smoke test exercised all six tabs, labels/order, independent folders,
+worker dispatch, global disabling and completion with synthetic settings and fake
+processors. `app.py` also launched on Mac. Display capture failed in this session,
+so visual appearance was not independently certified from a screenshot.
+
+The final full offline suite passed **462 tests** (no failures/skips), and `pip check`
+reported no broken requirements. Tests simulate
+Windows paths, redirected Documents, first launch and upgrades, and execute the real
+PyInstaller spec with tool doubles. They do not execute a Windows binary or PowerShell
+installer. Required remaining checks are the Windows acceptance list above, plus:
+first launch without config, three-to-six config merge, clean-account direct launch,
+actual upgrade/rollback, Unicode paths, no network startup, and installed Word output.

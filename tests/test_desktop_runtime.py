@@ -20,6 +20,7 @@ from tests.conftest import ROOT
 def test_source_paths_independent_of_cwd(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(runtime_paths, 'is_frozen', lambda: False)
+    monkeypatch.setattr(runtime_paths, 'is_windows', lambda: False)
     assert runtime_paths.config_path() == ROOT / 'config.yaml'
     assert runtime_paths.resource_root() == ROOT
 
@@ -140,14 +141,16 @@ def test_rotating_logs_and_secret_free_exceptions(settings, tmp_path, monkeypatc
 
 def test_installer_seed_is_redacted_and_valid_after_administrator_setup(tmp_path, monkeypatch):
     data = yaml.safe_load((ROOT / 'config.example.yaml').read_text(encoding='utf-8'))
-    assert data['google']['spreadsheet_id'] == 'YOUR_SPREADSHEET_ID'
+    assert data['google']['spreadsheet_id'] == runtime_paths.UNCONFIGURED_SPREADSHEET_ID
     assert 'private_key' not in str(data)
     data['google']['spreadsheet_id'] = 'synthetic_test_spreadsheet_0123456789'
     path = tmp_path / 'config.yaml'; path.write_text(yaml.safe_dump(data), encoding='utf-8')
     monkeypatch.setattr(runtime_paths, 'documents_directory', lambda: tmp_path / 'Documents')
     settings = DesktopConfig(path).load()
     assert {key: c.output_dir.name for key, c in settings.documents.items()} == {
-        'noc': 'NOC Documents', 'affidavit': 'Affidavit Documents', 'consent': 'Consent Documents'}
+        'noc': 'NOC Documents', 'affidavit': 'Affidavit Documents', 'consent': 'Consent Documents',
+        'registration': 'Registration Documents', 'by_law': 'By-Law Documents',
+        'form_a_registration': 'Form-A Registration Documents'}
 
 
 def test_spec_explicit_bundle_contents_and_windowed_name(monkeypatch):
@@ -161,7 +164,82 @@ def test_spec_explicit_bundle_contents_and_windowed_name(monkeypatch):
     runpy.run_path(str(ROOT / 'legal_document_generator.spec'), init_globals={
         'SPECPATH': str(ROOT), 'Analysis': analysis, 'PYZ': Mock(), 'EXE': executable})
     entries = analysis.call_args.kwargs['datas']
-    assert {Path(src).name for src, dest in entries} == {p.name for p in (ROOT / 'templates').glob('*.docx') if not p.name.startswith('~$')}
-    assert all(Path(src).parent == ROOT / 'templates' and dest == 'templates' for src, dest in entries)
+    assert {Path(src).name for src, dest in entries} == {
+        'Noc_Template.docx', 'Affidavit_Template.docx', 'Consent_Template.docx',
+        'Registration_Template.docx', 'By_Law_Template.docx', 'Form_A_Registration_Template.docx',
+        'config.example.yaml'}
+    assert all((Path(src).parent == ROOT / 'templates' and dest == 'templates') or
+               (Path(src) == ROOT / 'config.example.yaml' and dest == '.') for src, dest in entries)
     assert executable.call_args.kwargs['console'] is False
     assert executable.call_args.kwargs['name'] == 'Legal Document Generator'
+
+
+@pytest.mark.parametrize('frozen', [False, True])
+def test_fresh_windows_runtime_provisioning_and_all_six_templates(tmp_path, monkeypatch, frozen):
+    from desktop import tab_metadata
+    from document_registry import SPECS
+    from document_generator import preflight_template
+    from tests.test_desktop_six import KEYS, LABELS
+    monkeypatch.setattr(runtime_paths, 'is_windows', lambda: True)
+    monkeypatch.setattr(runtime_paths, 'is_frozen', lambda: frozen)
+    monkeypatch.setattr(runtime_paths, 'resource_root', lambda: ROOT)
+    monkeypatch.setattr(runtime_paths, 'documents_directory', lambda: tmp_path / 'Redirected Documents')
+    monkeypatch.setenv('APPDATA', str(tmp_path / 'Roaming'))
+    monkeypatch.chdir(tmp_path)
+    store = DesktopConfig()
+    assert not store.path.exists()
+    loaded = store.load()
+    assert store.path == tmp_path / 'Roaming' / runtime_paths.APP_ID / 'config.yaml'
+    assert tuple(m.key for m in tab_metadata(loaded)) == KEYS
+    assert tuple(m.label for m in tab_metadata(loaded)) == LABELS
+    assert loaded.spreadsheet_id == runtime_paths.UNCONFIGURED_SPREADSHEET_ID
+    assert loaded.credentials_file == store.path.parent / 'credentials.json'
+    assert not loaded.credentials_file.exists()
+    for key, label in zip(KEYS, LABELS):
+        assert loaded.documents[key].output_dir == tmp_path / 'Redirected Documents' / (label + ' Documents')
+        assert loaded.documents[key].template_path.parent == ROOT / 'templates'
+        preflight_template(SPECS[key], loaded.documents[key], loaded)
+    original = store.path.read_bytes()
+    assert store.load() == loaded and store.path.read_bytes() == original
+
+
+def test_unconfigured_seed_cannot_start_worker(tmp_path, monkeypatch):
+    from tests.test_desktop import Root as FakeRoot, Tab
+    from desktop import build_tabs, DesktopController
+    data = yaml.safe_load((ROOT / 'config.example.yaml').read_text(encoding='utf-8'))
+    path = tmp_path / 'config.yaml'; path.write_text(yaml.safe_dump(data), encoding='utf-8')
+    monkeypatch.setattr(runtime_paths, 'documents_directory', lambda: tmp_path / 'Documents')
+    store = DesktopConfig(path); settings = store.load()
+    tabs = build_tabs(Mock(), settings, Mock(), Mock(), Mock(), tab_factory=Tab)
+    worker = Mock(); monkeypatch.setattr(desktop.threading, 'Thread', worker)
+    controller = DesktopController(FakeRoot(), store, settings, tabs)
+    controller.generate('registration')
+    worker.assert_not_called()
+    assert controller.tabs['registration'].status.startswith('Setup error')
+    assert controller.active_key is None and all(t.enabled for t in tabs.values())
+
+
+def test_upgrade_preserves_config_and_credentials_bytes(settings, monkeypatch):
+    monkeypatch.setattr(runtime_paths, 'is_frozen', lambda: True)
+    monkeypatch.setattr(runtime_paths, 'config_path', lambda: settings.config_path)
+    credentials = settings.config_path.parent / 'credentials.json'
+    credentials.write_text('synthetic existing credential marker', encoding='utf-8')
+    before = settings.config_path.read_bytes(), credentials.read_bytes()
+    assert DesktopConfig().load().documents == settings.documents
+    assert (settings.config_path.read_bytes(), credentials.read_bytes()) == before
+
+
+def test_provisioning_race_never_overwrites_winner(settings, tmp_path, monkeypatch):
+    path = tmp_path / 'first-launch' / 'config.yaml'
+    monkeypatch.setattr(runtime_paths, 'is_frozen', lambda: True)
+    monkeypatch.setattr(runtime_paths, 'config_path', lambda: path)
+    monkeypatch.setattr(runtime_paths, 'resource_root', lambda: ROOT)
+    original_open = Path.open
+    winner = settings.config_path.read_bytes()
+    def raced_open(self, mode='r', *args, **kwargs):
+        if self == path and mode == 'xb':
+            with original_open(self, 'wb') as f: f.write(winner)
+        return original_open(self, mode, *args, **kwargs)
+    monkeypatch.setattr(Path, 'open', raced_open)
+    DesktopConfig().load()
+    assert path.read_bytes() == winner

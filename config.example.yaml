@@ -1,4 +1,4 @@
-# Installer seed only. The sole active settings file is config.yaml.
+# Safe installer/first-launch seed. The sole active settings file is config.yaml.
 # Administrator: set spreadsheet_id and confirm each worksheet's date format.
 schema_version: 1
 app:
@@ -6,7 +6,7 @@ app:
   log_file: logs/generator.log
   log_level: INFO
 google:
-  spreadsheet_id: YOUR_SPREADSHEET_ID
+  spreadsheet_id: UNCONFIGURED_LEGAL_DOCUMENT_GENERATOR
   credentials_file: credentials.json
   scopes:
     - https://www.googleapis.com/auth/spreadsheets
@@ -40,4 +40,28 @@ documents:
     template_path: templates/Consent_Template.docx
     output_dir: ''
     filename_pattern: CONSENT_{project_name}_{applicant_name}_{row_number}.docx
+    input_date_format: '%m/%d/%Y'
+  registration:
+    enabled: true
+    label: Registration
+    worksheet_name: Registration Responses
+    template_path: templates/Registration_Template.docx
+    output_dir: ''
+    filename_pattern: REGISTRATION_{association_name}_{row_number}.docx
+    input_date_format: '%m/%d/%Y'
+  by_law:
+    enabled: true
+    label: By-Law
+    worksheet_name: By-Law Responses
+    template_path: templates/By_Law_Template.docx
+    output_dir: ''
+    filename_pattern: BY_LAW_{association_name}_{row_number}.docx
+    input_date_format: '%m/%d/%Y'
+  form_a_registration:
+    enabled: true
+    label: Form-A Registration
+    worksheet_name: Form A Registration Responses
+    template_path: templates/Form_A_Registration_Template.docx
+    output_dir: ''
+    filename_pattern: FORM_A_REGISTRATION_{association_name}_{row_number}.docx
     input_date_format: '%m/%d/%Y'

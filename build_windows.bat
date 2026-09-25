@@ -10,7 +10,9 @@ if not exist "%PROJECT_PYTHON%" (
   echo ERROR: Create the project .venv and install requirements-build.txt first.
   exit /b 1
 )
-"%PROJECT_PYTHON%" -c "import sys; print(sys.executable); print(sys.version); sys.exit(0 if sys.version_info[:2] in ((3, 11), (3, 14)) else 'Use Python 3.11 or 3.14 for this build')"
+"%PROJECT_PYTHON%" -c "import sys, struct, tkinter; print(sys.executable); print(sys.version); sys.exit(0 if sys.version_info[:2] == (3, 11) and struct.calcsize('P') == 8 else 'Use 64-bit Python 3.11 for this build')"
+if errorlevel 1 exit /b 1
+"%PROJECT_PYTHON%" -m pip install -r requirements-build.txt
 if errorlevel 1 exit /b 1
 "%PROJECT_PYTHON%" -m pip check
 if errorlevel 1 exit /b 1
@@ -19,6 +21,12 @@ if errorlevel 1 (
   echo ERROR: Tests failed. No executable was built.
   exit /b 1
 )
+rem Remove only this target's stale EXE after tests pass; preserve unrelated files.
+if exist "dist\Legal Document Generator.exe" (
+  del /q "dist\Legal Document Generator.exe"
+  if errorlevel 1 exit /b 1
+)
+rem --clean clears PyInstaller cache/work files for the maintained specification.
 "%PROJECT_PYTHON%" -m PyInstaller --clean --noconfirm legal_document_generator.spec
 if errorlevel 1 exit /b 1
 if not exist "dist\Legal Document Generator.exe" exit /b 1

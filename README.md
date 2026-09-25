@@ -1,6 +1,6 @@
 # Legal Document Generator
 
-Shared backend and CLI for six legal document types, with previously implemented Tkinter/Windows support for NOC, Affidavit, and Consent. Registration, By-Law, and Form-A were added for Mac/backend validation only on 24 September 2026. Each document uses its own worksheet and output directory in one spreadsheet. The current business contract is [FORM_SPEC_FINAL.md](FORM_SPEC_FINAL.md). No legacy application is imported at runtime.
+Shared backend and CLI for six legal document types, with one registry-driven Tkinter desktop for all six workflows. Registration, By-Law, and Form-A were added for Mac/backend validation only on 24 September 2026. Each document uses its own worksheet and output directory in one spreadsheet. The current business contract is [FORM_SPEC_FINAL.md](FORM_SPEC_FINAL.md). No legacy application is imported at runtime.
 
 | Key | Worksheet | Inputs | Required | Optional |
 | --- | --- | ---: | ---: | --- |
@@ -11,13 +11,12 @@ Shared backend and CLI for six legal document types, with previously implemented
 | `by_law` | `By-Law Responses` | 3 | 3 | None |
 | `form_a_registration` | `Form A Registration Responses` | 59 | 34 | Association Email; members 6–11 conditionally required |
 
-The Tkinter desktop application now adds registry-driven NOC, Affidavit and Consent tabs on this shared backend. Run `.venv/bin/python app.py` from source. Each tab persists its own Save Folder in `config.yaml`; Generate runs only that document in a worker, with one job per application window. Startup performs no Sheets operations. Templates and administrator settings stay out of the office UI.
+The Tkinter desktop application now adds registry-driven NOC, Affidavit, Consent, Registration, By-Law and Form-A Registration tabs on this shared backend. Run `.venv/bin/python app.py` from source. Each tab persists its own Save Folder in `config.yaml`; Generate runs only that document in a worker, with one job per application window. Startup performs no Sheets operations. Templates and administrator settings stay out of the office UI.
 
-The new extension does not change or validate Windows UI, packaging, installer,
-or desktop configuration code. The existing desktop is registry-driven, so adding
-enabled entries can expose them when that application is launched; this is not
-Phase-2 acceptance. Use the CLI for the new types during this phase. The existing
-Windows installer seed `config.example.yaml` deliberately remains unchanged.
+The Windows phase now provides a six-document seed and bundled templates, per-user
+AppData configuration/logs, safe first-launch provisioning and upgrade preservation.
+The backend's macOS live validation remains the source of truth. Windows binaries
+and installer execution still require acceptance on a real Windows machine.
 
 See [Windows deployment](WINDOWS_DEPLOYMENT.md) for build, installation, configuration, credentials, upgrades and acceptance checks. Windows packaging infrastructure is provided; the Windows executable and installer still require testing on Windows. Automatic polling and scheduled generation are not implemented.
 
@@ -189,7 +188,7 @@ are required by the Windows build and must remain in the repository.
 Internal implementation plans and notes stay local and are ignored, along with
 credentials, active configuration, virtual environments, generated documents, logs
 and build output. Put additional private development notes in `local-notes/`.
-The installer uses `config.example.yaml` only as an initial seed; provision the
+The installer and first EXE launch use `config.example.yaml` only as an initial seed; provision the
 active `config.yaml` and credentials separately as described in the deployment guide.
 
 ## Mac/backend extension commands and configuration

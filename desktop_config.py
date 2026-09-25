@@ -13,8 +13,22 @@ from models import SetupError
 class DesktopConfig:
     def __init__(self, path=None):
         self.path = Path(path or runtime_paths.config_path()).expanduser().resolve()
+        self.provision_missing = path is None and (runtime_paths.is_windows() or runtime_paths.is_frozen())
+
+    def _provision(self):
+        if self.path.exists() or not self.provision_missing:
+            return
+        seed = (runtime_paths.resource_root() / 'config.example.yaml').read_bytes()
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            # Exclusive creation: never replace an existing office configuration.
+            with self.path.open('xb') as stream:
+                stream.write(seed)
+        except FileExistsError:
+            pass
 
     def load(self):
+        self._provision()
         try:
             raw = yaml.load(self.path.read_text(encoding='utf-8'), Loader=UniqueLoader)
         except (OSError, yaml.YAMLError) as exc:
@@ -32,7 +46,7 @@ class DesktopConfig:
         if changed:
             self._write(raw)
         settings = load_settings(self.path)
-        if runtime_paths.is_frozen():
+        if runtime_paths.is_frozen() or runtime_paths.is_windows():
             documents = {}
             for key, config in settings.documents.items():
                 template = Path(raw['documents'][key]['template_path']).expanduser()

@@ -58,11 +58,13 @@ def main():
         # Establish a fallback log before parsing potentially missing/invalid YAML.
         try:
             logger, handler = configure_desktop_logging()
+            logger.info('Application startup')
             settings = store.load()
             logger.removeHandler(handler)
             handler.close()
             handler = None
             logger, handler = configure_desktop_logging(settings)
+            logger.info('Application startup documents=%s', ','.join(settings.documents))
         except Exception as exc:
             startup_error = exc
             log_failure('logging/configuration setup failed', exc)
