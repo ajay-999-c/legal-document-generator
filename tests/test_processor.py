@@ -99,7 +99,7 @@ def test_error_sync_failure(settings):
     assert result.counts['failed']==1 and result.rows[0].synchronization_errors
 
 def test_dry_run_invalid_trailing_blanks(settings):
-    data=values('noc'); data['signatory_role']=''; data['project_name']=''
+    data=values('noc'); data['signatory_name']=''; data['project_name']=''
     sheet=FakeSheet(records=[data]); sheet.data[1]=sheet.data[1][:-5]
     assert run_batch(settings,'noc',dry_run=True,worksheet=sheet).counts['invalid']==1 and not sheet.writes
 

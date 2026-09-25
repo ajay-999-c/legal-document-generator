@@ -52,7 +52,7 @@ def test_list_local(tmp_path,monkeypatch,capsys):
     monkeypatch.chdir(tmp_path); assert main(['list-documents'])==0
     assert 'consent' in capsys.readouterr().out
     result=subprocess.run([sys.executable,str(ROOT/'main.py'),'list-documents'],cwd=tmp_path,capture_output=True,text=True)
-    assert result.returncode==0 and '17 inputs' in result.stdout
+    assert result.returncode==0 and '14 inputs' in result.stdout
 
 def test_wrong_worksheet(settings,monkeypatch):
     import sheets_service

@@ -83,6 +83,18 @@ def test_headers_are_explicit():
         heading_map(SPEC, HEADERS + [' Association Address '])
 
 
+def test_latest_live_headers_and_fixed_wording(registration_settings):
+    headers = json.loads((ROOT / 'tests/fixtures/migration_headers.json').read_text(encoding='utf-8'))['registration']
+    assert heading_map(SPEC, headers) == {key: i + 1 for i, key in enumerate(VALUES)}
+    assert not {'khasra_number', 'project_location', 'document_date', 'designation'} & {f.parameter for f in SPEC.fields}
+    _, output = render(SPEC, registration_settings, VALUES)
+    text = xml_parts(BytesIO(output))['word/document.xml']
+    assert 'भूमि ' + ADDRESS + ' में' in text
+    assert 'भूमि खसरा न. ' not in text
+    assert 'दिनांक …………..' in text
+    assert '(मनोनीत अध्यक्ष)' in text
+
+
 def test_filename_sanitization(registration_settings):
     data = {**VALUES, 'association_name': '../../CON\\ bad:<>|?*'}
     name = output_filename(registration_settings.documents[SPEC.key], data, 12)

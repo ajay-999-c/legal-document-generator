@@ -22,11 +22,19 @@ env/
 .venv-*/
 
 # Internal working notes: keep locally, exclude from the published source
-/CODEX_PHASE1_IMPLEMENTATION_PLAN.md
+/form.txt
+/prompt.txt
+/prompt/
+/CODEX*.md
+/*_PLAN.md
+/*_VALIDATION.md
+/FINAL_CONTRACT_MIGRATION.md
+/PHASE1_EXTENSION_VALIDATION.md
 /IMPLEMENTATION_NOTES.md
 /local-notes/
 /.agents/
 /.codex/
+# FORM_SPEC_FINAL.md is required by tests; keep business/developer specs visible.
 
 # Secrets and private runtime configuration
 credentials.json
@@ -50,11 +58,9 @@ config.yml.tmp
 !config.example.yaml
 !config.example.yml
 
-# Generated output; retain intentional empty-directory placeholders
-**/generated/*
-!**/generated/.gitkeep
-**/output/*
-!**/output/.gitkeep
+# Generated output (directory names match at any depth)
+generated/
+output/
 *.docx
 *.pdf
 # Application Word templates are source assets, including legacy templates
@@ -68,6 +74,8 @@ render/
 renders/
 rendered/
 render_output/
+/screenshots/
+/validation-screenshots/
 tmp_render*/
 .render*/
 tmp/
@@ -101,7 +109,6 @@ dist/
 Thumbs.db
 Desktop.ini
 .idea/
-.vscode/
 *.swp
 *.swo
 

@@ -54,16 +54,8 @@ def test_captured_live_header_contract(key):
 
 @pytest.mark.parametrize('key', NEW_KEYS)
 def test_documented_mappings_match_adapter(key):
-    text = (ROOT / 'FORM_SPEC.md').read_text(encoding='utf-8')
-    titles = {'registration': 'Registration', 'by_law': 'By-Law', 'form_a_registration': 'Form-A'}
-    section = text.split('## ' + titles[key] + ' explicit mappings\n')[1].split('\n## ')[0]
-    rows = [line.split('|')[1:-1] for line in section.splitlines() if line.startswith('| ')][2:]
-    assert len(rows) == len(SPECS[key].fields)
-    for row, field in zip(rows, SPECS[key].fields):
-        assert row[0].strip() == field.heading
-        assert row[1].strip().strip('`') == field.parameter
-        assert row[2].strip().strip('`') == field.placeholder
-        assert (row[3].strip() == 'Yes') == field.required
+    from tests.final_contract import assert_contract
+    assert_contract(key)
 
 
 @pytest.mark.parametrize('key', NEW_KEYS)

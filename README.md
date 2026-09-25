@@ -1,12 +1,12 @@
 # Legal Document Generator
 
-Shared backend and CLI for six legal document types, with previously implemented Tkinter/Windows support for NOC, Affidavit, and Consent. Registration, By-Law, and Form-A were added for Mac/backend validation only on 24 September 2026. Each document uses its own worksheet and output directory in one spreadsheet. The current business contract is [FORM_SPEC.md](FORM_SPEC.md), including its dated extension section. No legacy application is imported at runtime.
+Shared backend and CLI for six legal document types, with previously implemented Tkinter/Windows support for NOC, Affidavit, and Consent. Registration, By-Law, and Form-A were added for Mac/backend validation only on 24 September 2026. Each document uses its own worksheet and output directory in one spreadsheet. The current business contract is [FORM_SPEC_FINAL.md](FORM_SPEC_FINAL.md). No legacy application is imported at runtime.
 
 | Key | Worksheet | Inputs | Required | Optional |
 | --- | --- | ---: | ---: | --- |
-| `noc` | `NOC Responses` | 14 | 12 | Document Date, Signatory Role |
-| `affidavit` | `Affidavit Responses` | 17 | 16 | Document Date |
-| `consent` | `Consent Responses` | 24 | 23 | Document Date |
+| `noc` | `NOC Responses` | 12 | 11 | Document Date |
+| `affidavit` | `Affidavit Responses` | 14 | 14 | None |
+| `consent` | `Consent Responses` | 35 | 22 | Document Date; members 6–11 conditionally required |
 | `registration` | `Registration Responses` | 7 | 7 | None |
 | `by_law` | `By-Law Responses` | 3 | 3 | None |
 | `form_a_registration` | `Form A Registration Responses` | 59 | 34 | Association Email; members 6–11 conditionally required |
@@ -96,11 +96,11 @@ Schema version, formatting values, scope and operational names are checked again
 
 ## Dates and identifiers
 
-The initial `%Y-%m-%d` input format is an example, not an assertion about your Sheet. Confirm the actual formatted strings returned by Sheets. Configure each document's `input_date_format` explicitly: `%Y-%m-%d`, `%d-%m-%Y`, `%m/%d/%Y`, `%d/%m/%Y`, `%m/%d/%y` or `%d/%m/%y`. No month-first/day-first guessing or live date-format mutation occurs. An ambiguous slash date can match both conventions; the operator must confirm which convention the worksheet uses. Invalid dates produce field-oriented row errors. Every completion-certificate date is required. Blank Document Date prints ten dots; valid dates print `DD-MM-YYYY`.
+The initial `%Y-%m-%d` input format is an example, not an assertion about your Sheet. Confirm the actual formatted strings returned by Sheets. Configure each document's `input_date_format` explicitly: `%Y-%m-%d`, `%d-%m-%Y`, `%m/%d/%Y`, `%d/%m/%Y`, `%m/%d/%y` or `%d/%m/%y`. No month-first/day-first guessing or live date-format mutation occurs. An ambiguous slash date can match both conventions; the operator must confirm which convention the worksheet uses. Invalid dates produce field-oriented row errors. Every completion-certificate date is required. For NOC and Consent, blank Document Date prints ten dots; valid dates print `DD-MM-YYYY`. Affidavit and Registration retain fixed manual date blanks and have no Document Date input.
 
 All Sheet cells are read as formatted strings rather than numericised records. Submitted `026` and `343/1` remain text through validation and rendering. If Sheets has already discarded leading zeroes, this backend cannot reconstruct them; verify the original Form/Sheet transport using designated test submissions. Age alone is validated as an integer from 1 to 120. Plot, Khasra, RERA and certificate identifiers have no numeric-only restriction.
 
-The NOC address's old heading is an explicit alias. Affidavit supports both `Father’s Name` and the reviewed straight-apostrophe `Father's Name` label. Other wording changes are not guessed. The old combined Affidavit land/location heading is deliberately not accepted: historical rows require the separate Khasra and Project Location fields. All document headings must exist, including columns with optional answers. Duplicate headings resolving to one input are rejected.
+Affidavit retains the reviewed straight-apostrophe alias for `Father’s Name / पिता का नाम`; duplicate canonical/alias headings are rejected. No other legacy aliases are retained for the four migrated workflows. `association_address` is complete user-entered land/address text, never parsed or derived. NOC and Consent use the independent `project_location` for location-only text; Affidavit and Registration have no location-only or separate Khasra input. All document headings must exist, including columns with optional answers. Duplicate headings resolving to one input are rejected.
 
 ## CLI commands and exits
 
@@ -155,9 +155,9 @@ CONSENT_TEST_ROWS='REPLACE_WITH_APPROVED_CONSENT_ROW'
 ```
 
 5. Confirm the three files are in the three configured directories. Confirm only those rows' operational cells changed, with correct filenames, local-clock processed times and cleared errors. No submitted fields or Timestamp should change.
-6. Open each DOCX in Word or another suitable Mac viewer. Inspect all supplied values, Hindi, wrapping/page breaks, blank/filled dates, association-name city suffix, the separate Affidavit land/location sentence, and all five Consent members in order. Inspect Consent's society address in the header. Programmatic tests do not replace this visual review.
+6. Open each DOCX in Word or another suitable Mac viewer. Inspect all supplied values, Hindi, wrapping/page breaks, blank/filled dates, NOC's title without a fixed city suffix, complete association addresses, and all populated Consent members in order. Inspect Consent's independent project location in the header. Programmatic tests do not replace this visual review.
 7. Repeat the same three generation commands: GENERATED rows must skip. Use a separate deliberately invalid TEST row for ERROR/retry testing; correct its data and retry. Do not reset successful production rows. For stale PROCESSING rows, inspect the local file and status history before any manual reset.
-8. Make new TEST submissions with Document Date omitted, and optionally omit NOC Signatory Role. Confirm ten dots and the blank role. Change only one document's configured output directory and generate a new TEST submission; verify the other two directory settings remain unchanged. Changing a folder does not regenerate GENERATED rows.
+8. Make new NOC/Consent TEST submissions with Document Date omitted. Confirm ten dots. NOC has no Signatory Role input. Change only one document's configured output directory and generate a new TEST submission; verify the other two directory settings remain unchanged. Changing a folder does not regenerate GENERATED rows.
 
 ## Status and failure behavior
 
@@ -182,7 +182,7 @@ Adding a new document requires a versioned adapter/field contract, template, exp
 ## Published source and local files
 
 The repository includes application source, adapters, document templates, offline
-tests and fixtures, `FORM_SPEC.md`, the redacted configuration example, build and
+tests and fixtures, `FORM_SPEC_FINAL.md`, the redacted configuration example, build and
 installer scripts, and deployment documentation. Tests and the Form specification
 are required by the Windows build and must remain in the repository.
 
@@ -229,7 +229,7 @@ stay in the separately provisioned JSON file.
 The actual By-Law filename is `By_Law_Template.docx`. None of the three templates
 was edited. All use the complete `association_address`; none needs separate
 Khasra/project-location input. Registration has no Document Date input. See
-[the explicit mappings and required-field contract](FORM_SPEC.md#phase-1-backend-extension--24-september-2026).
+[the explicit mappings and required-field contract](FORM_SPEC_FINAL.md).
 
 Form-A accepts 5–11 complete committee members, with no gaps in optional members
 6–11. Any supplied optional member requires name, designation, plot_no and mobile.
@@ -276,3 +276,44 @@ See [extension validation evidence](PHASE1_EXTENSION_VALIDATION.md) for the test
 counts, exact live headers, worksheet checks, dry-run outcomes, and remaining
 visual/requiredness confirmation limits. The supplied full By-Law is not one
 page; its preserved template contains an explicit page break and 231 paragraphs.
+
+
+## Final contract migration — 25 September 2026
+
+NOC, Affidavit, Consent and Registration now follow `FORM_SPEC_FINAL.md` and
+verified live headings. Registration's address heading is exactly `Association Address`
+(English only). Affidavit translates the final inputs to the template's existing
+uppercase placeholders, except lowercase `association_address`. Its treasurer wording
+and manual date blanks are fixed. NOC has no signatory-role input. By-Law and Form-A
+retain their existing business contracts. Registry keys, configuration, shared processing,
+status/retry rules and Windows files were not changed.
+
+Consent accepts one `members` list assembled from `member_N_name` and
+`member_N_designation`, N=1–11. Both values are required for members 1–5. Optional
+members 6–11 are ignored only when both values are blank; partial members and gaps
+are rejected. The table renders exactly the populated 5–11 rows. Names are preserved
+as entered, including any father-name text. No member email/father-name fields exist.
+
+Run focused tests and then the complete suite after each migration, in this order:
+Affidavit, NOC, Consent, Registration. Tests use temporary documents and fake Sheets.
+
+```bash
+.venv/bin/python -m pytest tests/test_affidavit_migration.py -q
+.venv/bin/python -m pytest tests -q
+.venv/bin/python -m pytest tests/test_noc_migration.py -q
+.venv/bin/python -m pytest tests -q
+.venv/bin/python -m pytest tests/test_consent_migration.py -q
+.venv/bin/python -m pytest tests -q
+.venv/bin/python -m pytest tests/test_registration.py -q
+.venv/bin/python -m pytest tests -q
+.venv/bin/python main.py check-sheets --document affidavit
+.venv/bin/python main.py check-sheets --document noc
+.venv/bin/python main.py check-sheets --document consent
+.venv/bin/python main.py check-sheets --document registration
+```
+
+After read-only checks, select one eligible physical row per worksheet and use
+`main.py generate --document KEY --rows ROW --dry-run`. Stop before production
+creation or status updates; exact live rows require explicit approval.
+See [migration validation](FINAL_CONTRACT_MIGRATION.md) for counts, exact headers,
+placeholder inventories and designated-row results. Windows acceptance remains separate.
