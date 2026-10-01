@@ -60,8 +60,14 @@ def controller(settings):
 
 
 def wait_for_job(controller):
-    controller.worker.join(timeout=5)
-    assert not controller.worker.is_alive()
+    # Integration tests render/save real DOCX files. Slow disks or file scanners
+    # can exceed five seconds; this is a completion check, not a speed benchmark.
+    # join returns immediately on completion and still bounds a stuck worker.
+    controller.worker.join(timeout=60)
+    assert not controller.worker.is_alive(), (
+        f'{controller.worker.name} did not finish within 60 seconds; '
+        'inspect the captured generation logs for a stalled worker or file access.'
+    )
     controller.poll()
 
 

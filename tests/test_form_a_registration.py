@@ -56,7 +56,7 @@ def form_a_settings(settings, monkeypatch):
 
 
 def test_field_contract():
-    assert len(SPEC.fields) == 59 and sum(f.required for f in SPEC.fields) == 34
+    assert len(SPEC.fields) == 59 and sum(f.required for f in SPEC.fields) == 26
     headers = SCALAR_HEADERS.copy()
     for i in range(1, 12):
         headers.extend([f'Committee Member {i} Name / समिति सदस्य {i} का नाम ',
@@ -69,11 +69,11 @@ def test_field_contract():
     assert [f.parameter for f in SPEC.fields if 'email' in f.parameter] == ['association_email']
     for i in range(1, 12):
         fields = [f for f in SPEC.fields if f.parameter.startswith(f'committee_member_{i}_')]
-        assert len(fields) == 4 and all(f.required == (i <= 5) for f in fields)
+        assert len(fields) == 4 and all(f.required == (i <= 3) for f in fields)
         assert {f.placeholder for f in fields} == {f'committee_members[{i-1}].{k}' for k in MEMBER_KEYS}
 
 
-@pytest.mark.parametrize('committee_count,member_count', [(5, 85), (6, 20), (11, 85), (5, 5)])
+@pytest.mark.parametrize('committee_count,member_count', [(3, 3), (3, 10), (4, 4), (5, 85), (6, 20), (11, 85), (5, 5)])
 def test_actual_dynamic_tables(form_a_settings, committee_count, member_count):
     data = values(committee_count, member_count)
     config = form_a_settings.documents[SPEC.key]
@@ -134,13 +134,13 @@ def test_every_required_field(form_a_settings, parameter):
         render(SPEC, form_a_settings, {**values(), parameter: ' \n\t '})
 
 
-@pytest.mark.parametrize('count', [4, 12])
+@pytest.mark.parametrize('count', [0, 1, 2, 12])
 def test_invalid_committee_count(form_a_settings, count):
     with pytest.raises(RowError, match='committee'):
         render(SPEC, form_a_settings, values(count))
 
 
-@pytest.mark.parametrize('index', range(6, 12))
+@pytest.mark.parametrize('index', range(4, 12))
 @pytest.mark.parametrize('key', MEMBER_KEYS)
 def test_partial_optional_member(form_a_settings, index, key):
     data = values(index - 1)

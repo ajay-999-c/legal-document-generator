@@ -1,0 +1,13 @@
+{% macro field(f, values, required=false) %}
+<div class="{{ 'col-12' if f.kind == 'textarea' else 'col-md-6' }}">
+<label class="form-label" for="{{ f.key }}">{{ f.label }}{% if required %} <span class="text-danger" aria-label="required">*</span>{% endif %}</label>
+{% if f.kind == 'textarea' %}<textarea class="form-control" id="{{ f.key }}" name="{{ f.key }}" rows="2" maxlength="2000" {% if required %}required{% endif %}>{{ values.get(f.key, '') }}</textarea>
+{% else %}<input class="form-control" id="{{ f.key }}" name="{{ f.key }}" type="{{ f.kind }}" value="{{ values.get(f.key, '') }}" {% if f.kind == 'number' %}min="1" max="{{ 120 if f.key == 'age' else 1000000 }}" step="1"{% else %}maxlength="2000"{% endif %} {% if required %}required{% endif %}>{% endif %}
+</div>{% endmacro %}
+{% macro badge(status) %}<span class="badge rounded-pill {{ 'text-bg-success' if status == 'Generated' else 'status-ready' if status == 'Ready' else 'text-bg-warning' }}">{{ status }}</span>{% endmacro %}
+{% macro document_card(card, project, member=none) %}
+<div class="col-md-6"><article class="card h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-start gap-2"><h3 class="h5">{{ card.label }}</h3>{{ badge(card.status) }}</div><p class="small text-secondary">{{ 'One document for this member' if member else 'One document for the project' }}</p>
+{% if card.missing %}<div class="small mb-3"><strong>Complete before generation:</strong><ul class="mb-2">{% for item in card.missing %}<li>{{ item }}</li>{% endfor %}</ul><a href="/projects/{{ project.project_id }}/{{ 'members/' ~ member.member_id ~ '/edit' if member else 'details' }}">Review {{ 'member' if member else 'project' }} details</a> · <a href="/projects/{{ project.project_id }}/details#document-details">Document settings</a> · <a href="/projects/{{ project.project_id }}/members#committee">Committee</a></div>{% else %}<p class="small">{{ 'Generated in this session. Generate again to download another copy.' if card.status == 'Generated' else 'Required information is available.' }}</p>{% endif %}
+{% if member %}<a class="btn btn-outline-primary" href="/projects/{{ project.project_id }}/members">Generate {{ card.label }} for all members →</a>{% else %}
+<form method="post" action="/projects/{{ project.project_id }}/documents/{{ card.key }}/generate">{% if storage_mode == "sheets" %}<input type="hidden" name="_revision" value="{{ project.revision }}">{% endif %}<button class="btn {{ 'btn-outline-primary' if card.status == 'Generated' else 'btn-primary' }}" {% if card.missing %}disabled{% endif %}>{{ 'Regenerate' if card.status == 'Generated' else 'Generate' }}</button></form>{% endif %}</div></article></div>
+{% endmacro %}

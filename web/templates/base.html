@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{% block title %}Legal Document Manager{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', path='vendor/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', path='app.css') }}"></head>
+<body><a class="visually-hidden-focusable" href="#main">Skip to content</a>
+<header class="topbar"><div class="container-xl d-flex align-items-center justify-content-between gap-3 flex-wrap"><a class="brand" href="/projects"><span class="brand-icon" aria-hidden="true">L</span> Legal Document Manager</a><span class="badge text-bg-light border">{{ "GOOGLE SHEETS" if storage_mode == "sheets" else "LOCAL DEMO" }}</span></div></header>
+<div class="demo-strip"><div class="container-xl">{% if storage_mode == "sheets" %}Google Sheets workspace · Project and member changes are saved · Generate documents to download them{% else %}Demo workspace · Test data only · Changes reset when the server restarts · Documents download in your browser{% endif %}</div></div>
+<main id="main" class="container-xl py-4 pb-5">
+{% if project %}<a href="/projects" class="small text-decoration-none">← All projects</a><div class="project-heading mt-3"><p class="eyebrow">PROJECT WORKSPACE</p><h1>{{ project.details.project_name }}</h1><p class="text-secondary mb-0">{{ project.details.association_name }}</p></div>
+<nav class="nav nav-tabs project-tabs mb-4" aria-label="Project navigation">{% for key, label, suffix in [('overview','Overview',''),('details','Project Details','/details'),('members','Members','/members'),('documents','Documents','/documents')] %}<a class="nav-link {{ 'active' if active == key }}" {% if active == key %}aria-current="page"{% endif %} href="/projects/{{ project.project_id }}{{ suffix }}">{{ label }}</a>{% endfor %}</nav>{% endif %}
+{% if message %}<div class="alert alert-info" role="status">{{ message }}</div>{% endif %}
+{% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+{% block content %}{% endblock %}
+</main><footer class="container-xl pb-4 small text-secondary">Legal document dates are handwritten after generation. Only the completion certificate date is entered here.</footer>
+</body></html>

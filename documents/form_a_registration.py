@@ -29,7 +29,7 @@ MEMBER_PARTS = (
 )
 FIELDS = SCALAR_FIELDS + tuple(
     Field(f'committee_member_{i}_{key}', f'Committee Member {i} {english} / समिति सदस्य {i} {hindi}',
-          f'committee_members[{i-1}].{key}', i <= 5)
+          f'committee_members[{i-1}].{key}', i <= 3)
     for i in range(1, 12) for key, english, hindi in MEMBER_PARTS
 )
 
@@ -51,16 +51,16 @@ def committee(values):
     for i in range(1, 12):
         member = {key: values.get(f'committee_member_{i}_{key}', '') for key, _, _ in MEMBER_PARTS}
         present = [bool(value and str(value).strip()) for value in member.values()]
-        if not any(present) and i > 5:
+        if not any(present) and i > 3:
             gap = True
             continue
         if not all(present):
-            raise RowError(f'committee_member_{i}: all four fields are required for a populated member; members 1–5 are mandatory.')
+            raise RowError(f'committee_member_{i}: all four fields are required for a populated member; members 1–3 are mandatory.')
         if gap:
             raise RowError(f'committee_member_{i}: optional members must be contiguous; fill earlier members first.')
         members.append(member)
-    if not 5 <= len(members) <= 11:
-        raise RowError('committee_members: between 5 and 11 complete members are required.')
+    if not 3 <= len(members) <= 11:
+        raise RowError('committee_members: between 3 and 11 complete members are required.')
     return members
 
 

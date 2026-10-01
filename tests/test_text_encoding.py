@@ -26,7 +26,7 @@ def test_hindi_fixtures_with_cp1252_default(cp1252_default, key):
 
 def test_form_contract_with_cp1252_default(cp1252_default):
     from tests.test_documents import test_schema_against_business_contract
-    for key, count, required in [('noc', 12, 11), ('affidavit', 14, 14), ('consent', 35, 22)]:
+    for key, count, required in [('noc', 12, 11), ('affidavit', 15, 15), ('consent', 35, 22)]:
         test_schema_against_business_contract(key, count, required)
 
 

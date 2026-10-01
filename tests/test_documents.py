@@ -33,7 +33,7 @@ def noc_title_paragraph(document):
     return next(p for p in paragraphs if '{{association_name}}' in p.text)
 
 
-@pytest.mark.parametrize('key,count,required', [('noc',12,11),('affidavit',14,14),('consent',35,22)])
+@pytest.mark.parametrize('key,count,required', [('noc',12,11),('affidavit',15,15),('consent',35,22)])
 def test_schema_against_business_contract(key,count,required):
     from tests.final_contract import assert_contract
     spec = SPECS[key]

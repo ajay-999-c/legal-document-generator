@@ -1,0 +1,25 @@
+{% extends 'base.html' %}{% from 'macros.html' import field %}{% block content %}
+<h{{ '1' if creating else '2' }} class="h3">{{ 'Create New Project' if creating else 'Project Details' }}</h{{ '1' if creating else '2' }}>
+<p class="text-secondary">Fill in shared project information and document-specific details here. Member information is managed in Members. Fields marked * are required to save; other details can be completed later.</p>
+<p class="small text-secondary">Project name must be unique. एक ही नाम से दूसरी परियोजना नहीं बनाई जा सकती।</p>
+<form method="post" class="form-width">
+{% if storage_mode == "sheets" and project %}<input type="hidden" name="_revision" value="{{ project.revision }}">{% endif %}
+{% for heading, fields in project_groups.items() %}
+<section class="card mb-4"><div class="card-body p-4"><h2 class="h5 mb-4">{{ heading }}</h2><div class="row g-3">{% for f in fields %}{{ field(f, values, f.key in ['project_name','association_name']) }}{% endfor %}</div></div></section>
+{% endfor %}
+<section id="document-details">
+<h2 class="h4 mb-3">Document-specific details</h2>
+<p class="text-secondary">These details are saved together with the project information above.</p>
+{% for heading, fields in settings_groups.items() %}
+<section class="card card-body p-4 mb-4"><h3 class="h5 mb-3">{{ heading }}</h3>
+{% if heading in ['Affidavit','Consent'] %}<p class="small text-secondary">Person and signatory details come from each project member{% if heading == 'Consent' %}; the committee comes from this project{% endif %}.</p>
+{% elif heading == 'Form-A' %}<p class="small text-secondary">The declared member count is for Form-A and can exceed the number of member records entered. Committee name, plot and mobile come from Members; committee address comes from the project location. The first committee member provides the first signatory details.</p>{% endif %}
+<div class="row g-3">{% for f in fields %}{{ field(f, values) }}{% endfor %}</div></section>
+{% endfor %}
+<p class="small text-secondary">NOC uses the developer as recipient and the committee president as signatory. By-Law uses the association name, address and work area.</p>
+{% if project %}<p class="small">NOC signatory: <strong>{{ president or 'No president assigned' }}</strong></p>{% endif %}
+</section>
+<button class="btn btn-primary">{{ 'Create project' if creating else 'Save project details' }}</button>
+<a class="btn btn-outline-secondary" href="{{ '/projects' if creating else '/projects/' ~ project.project_id }}">Cancel</a>
+</form>
+{% endblock %}

@@ -20,7 +20,7 @@ HEADERS = ['Authority Location / सक्षम प्राधिकारी 
            'Association Address', 'Police Station / पुलिस थाना ',
            'Association / Society Name / एसोसिएशन / संस्था का नाम ', 'Place / स्थान ',
            'Signatory Name / हस्ताक्षरकर्ता का नाम ']
-VALUES = dict(authority_location='राऊ', project_name='परीक्षण विहार', association_address=ADDRESS,
+VALUES = dict(tehsil='राऊ', project_name='परीक्षण विहार', association_address=ADDRESS,
               police_station='राऊ थाना', association_name='परीक्षण संस्था', place='इंदौर',
               signatory_name='श्री परीक्षण सिंह')
 
@@ -34,13 +34,13 @@ def registration_settings(settings, monkeypatch):
 def test_real_contract_and_complete_address(registration_settings):
     assert len(SPEC.fields) == 7 and all(f.required for f in SPEC.fields)
     assert heading_map(SPEC, HEADERS) == {key: i for i, key in enumerate(VALUES)}
-    assert {f.placeholder for f in SPEC.fields} == set(VALUES)
+    assert {f.placeholder for f in SPEC.fields} == (set(VALUES) - {'tehsil'}) | {'authority_location'}
     assert not {'khasra_number', 'project_location', 'document_date'} & set(VALUES)
     config = registration_settings.documents[SPEC.key]
     preflight_template(SPEC, config, registration_settings)
     context, output = render(SPEC, registration_settings, VALUES)
     text = xml_parts(BytesIO(output))['word/document.xml']
-    assert context == VALUES
+    assert context == {('authority_location' if key == 'tehsil' else key): value for key, value in VALUES.items()}
     for value in VALUES.values():
         assert value in text
     assert text.count(ADDRESS) == 1

@@ -1,0 +1,803 @@
+{
+  "noc": [
+    {
+      "key": "association_name",
+      "headings": [
+        "Association Name / संस्था का नाम"
+      ]
+    },
+    {
+      "key": "project_location",
+      "headings": [
+        "Project Location / परियोजना का स्थान"
+      ]
+    },
+    {
+      "key": "association_address",
+      "headings": [
+        "Association Address / संस्था का पूरा पता"
+      ]
+    },
+    {
+      "key": "document_date",
+      "headings": [
+        "Document Date / दस्तावेज़ दिनांक"
+      ]
+    },
+    {
+      "key": "recipient_name",
+      "headings": [
+        "Recipient Name / प्राप्तकर्ता का नाम"
+      ]
+    },
+    {
+      "key": "developer_company",
+      "headings": [
+        "Developer Company / विकासकर्ता फर्म का नाम"
+      ]
+    },
+    {
+      "key": "developer_address",
+      "headings": [
+        "Developer Address / विकासकर्ता का पता"
+      ]
+    },
+    {
+      "key": "project_name",
+      "headings": [
+        "Project Name / परियोजना का नाम"
+      ]
+    },
+    {
+      "key": "rera_registration_no",
+      "headings": [
+        "RERA Registration Number / रेरा पंजीयन क्रमांक"
+      ]
+    },
+    {
+      "key": "completion_certificate_no",
+      "headings": [
+        "Completion Certificate Number / पूर्णता प्रमाण पत्र क्रमांक"
+      ]
+    },
+    {
+      "key": "completion_certificate_date",
+      "headings": [
+        "Completion Certificate Date / पूर्णता प्रमाण पत्र दिनांक"
+      ]
+    },
+    {
+      "key": "signatory_name",
+      "headings": [
+        "Signatory Name / हस्ताक्षरकर्ता का नाम"
+      ]
+    }
+  ],
+  "affidavit": [
+    {
+      "key": "name",
+      "headings": [
+        "Name / नाम"
+      ]
+    },
+    {
+      "key": "father_name",
+      "headings": [
+        "Father’s Name / पिता का नाम",
+        "Father's Name / पिता का नाम"
+      ]
+    },
+    {
+      "key": "age",
+      "headings": [
+        "Age / उम्र"
+      ]
+    },
+    {
+      "key": "address",
+      "headings": [
+        "Residential Address / निवास का पता"
+      ]
+    },
+    {
+      "key": "project_name",
+      "headings": [
+        "Project Name / परियोजना का नाम"
+      ]
+    },
+    {
+      "key": "association_address",
+      "headings": [
+        "Association Address / संस्था का पूरा पता"
+      ]
+    },
+    {
+      "key": "rera_registration_no",
+      "headings": [
+        "RERA Registration Number / रेरा पंजीयन क्रमांक"
+      ]
+    },
+    {
+      "key": "developer_name",
+      "headings": [
+        "Developer Name / विकासकर्ता का नाम"
+      ]
+    },
+    {
+      "key": "completion_certificate_no",
+      "headings": [
+        "Completion Certificate Number / पूर्णता प्रमाण पत्र क्रमांक"
+      ]
+    },
+    {
+      "key": "completion_certificate_date",
+      "headings": [
+        "Completion Certificate Date / पूर्णता प्रमाण पत्र दिनांक"
+      ]
+    },
+    {
+      "key": "plot_no",
+      "headings": [
+        "Plot Number / भूखंड क्रमांक"
+      ]
+    },
+    {
+      "key": "association_name",
+      "headings": [
+        "Association Name / संघ का नाम"
+      ]
+    },
+    {
+      "key": "tehsil",
+      "headings": [
+        "Tehsil / तहसील",
+        "Authority Location / सक्षम प्राधिकारी का स्थान"
+      ]
+    },
+    {
+      "key": "city",
+      "headings": [
+        "City / Place / शहर / स्थान"
+      ]
+    },
+    {
+      "key": "member_designation",
+      "headings": [
+        "Member Designation / सदस्य का पद"
+      ]
+    }
+  ],
+  "consent": [
+    {
+      "key": "association_name",
+      "headings": [
+        "Association Name / संस्था / एसोसिएशन का नाम"
+      ]
+    },
+    {
+      "key": "project_location",
+      "headings": [
+        "Project Location / परियोजना का स्थान"
+      ]
+    },
+    {
+      "key": "applicant_name",
+      "headings": [
+        "Applicant Name / आवेदक का नाम"
+      ]
+    },
+    {
+      "key": "applicant_address",
+      "headings": [
+        "Applicant Address / आवेदक का पता"
+      ]
+    },
+    {
+      "key": "project_name",
+      "headings": [
+        "Project Name / परियोजना का नाम"
+      ]
+    },
+    {
+      "key": "association_address",
+      "headings": [
+        "Association Address / संस्था का पूरा पता"
+      ]
+    },
+    {
+      "key": "registration_no",
+      "headings": [
+        "RERA Registration Number / रेरा पंजीयन क्रमांक"
+      ]
+    },
+    {
+      "key": "certificate_no",
+      "headings": [
+        "Completion Certificate Number / पूर्णता प्रमाण पत्र नंबर"
+      ]
+    },
+    {
+      "key": "certificate_date",
+      "headings": [
+        "Completion Certificate Date / पूर्णता प्रमाण पत्र दिनांक"
+      ]
+    },
+    {
+      "key": "plot_no",
+      "headings": [
+        "Plot / Khand Number / प्लॉट / खंड नंबर"
+      ]
+    },
+    {
+      "key": "place",
+      "headings": [
+        "Place / स्थान"
+      ]
+    },
+    {
+      "key": "document_date",
+      "headings": [
+        "Document Date / दस्तावेज़ दिनांक"
+      ]
+    },
+    {
+      "key": "signatory_name",
+      "headings": [
+        "Signatory Name / हस्ताक्षरकर्ता का नाम"
+      ]
+    },
+    {
+      "key": "member_1_name",
+      "headings": [
+        "Member 1 Name / सदस्य 1 का नाम"
+      ]
+    },
+    {
+      "key": "member_1_designation",
+      "headings": [
+        "Member 1 Designation / सदस्य 1 का पद / दायित्व"
+      ]
+    },
+    {
+      "key": "member_2_name",
+      "headings": [
+        "Member 2 Name / सदस्य 2 का नाम"
+      ]
+    },
+    {
+      "key": "member_2_designation",
+      "headings": [
+        "Member 2 Designation / सदस्य 2 का पद / दायित्व"
+      ]
+    },
+    {
+      "key": "member_3_name",
+      "headings": [
+        "Member 3 Name / सदस्य 3 का नाम"
+      ]
+    },
+    {
+      "key": "member_3_designation",
+      "headings": [
+        "Member 3 Designation / सदस्य 3 का पद / दायित्व"
+      ]
+    },
+    {
+      "key": "member_4_name",
+      "headings": [
+        "Member 4 Name / सदस्य 4 का नाम"
+      ]
+    },
+    {
+      "key": "member_4_designation",
+      "headings": [
+        "Member 4 Designation / सदस्य 4 का पद / दायित्व"
+      ]
+    },
+    {
+      "key": "member_5_name",
+      "headings": [
+        "Member 5 Name / सदस्य 5 का नाम"
+      ]
+    },
+    {
+      "key": "member_5_designation",
+      "headings": [
+        "Member 5 Designation / सदस्य 5 का पद / दायित्व"
+      ]
+    },
+    {
+      "key": "member_6_name",
+      "headings": [
+        "Member 6 Name / सदस्य 6 का नाम"
+      ]
+    },
+    {
+      "key": "member_6_designation",
+      "headings": [
+        "Member 6 Designation / सदस्य 6 का पद / दायित्व"
+      ]
+    },
+    {
+      "key": "member_7_name",
+      "headings": [
+        "Member 7 Name / सदस्य 7 का नाम"
+      ]
+    },
+    {
+      "key": "member_7_designation",
+      "headings": [
+        "Member 7 Designation / सदस्य 7 का पद / दायित्व"
+      ]
+    },
+    {
+      "key": "member_8_name",
+      "headings": [
+        "Member 8 Name / सदस्य 8 का नाम"
+      ]
+    },
+    {
+      "key": "member_8_designation",
+      "headings": [
+        "Member 8 Designation / सदस्य 8 का पद / दायित्व"
+      ]
+    },
+    {
+      "key": "member_9_name",
+      "headings": [
+        "Member 9 Name / सदस्य 9 का नाम"
+      ]
+    },
+    {
+      "key": "member_9_designation",
+      "headings": [
+        "Member 9 Designation / सदस्य 9 का पद / दायित्व"
+      ]
+    },
+    {
+      "key": "member_10_name",
+      "headings": [
+        "Member 10 Name / सदस्य 10 का नाम"
+      ]
+    },
+    {
+      "key": "member_10_designation",
+      "headings": [
+        "Member 10 Designation / सदस्य 10 का पद / दायित्व"
+      ]
+    },
+    {
+      "key": "member_11_name",
+      "headings": [
+        "Member 11 Name / सदस्य 11 का नाम"
+      ]
+    },
+    {
+      "key": "member_11_designation",
+      "headings": [
+        "Member 11 Designation / सदस्य 11 का पद / दायित्व"
+      ]
+    }
+  ],
+  "registration": [
+    {
+      "key": "tehsil",
+      "headings": [
+        "Tehsil / तहसील",
+        "Authority Location / सक्षम प्राधिकारी का स्थान"
+      ]
+    },
+    {
+      "key": "project_name",
+      "headings": [
+        "Project Name / परियोजना का नाम"
+      ]
+    },
+    {
+      "key": "association_address",
+      "headings": [
+        "Association Address"
+      ]
+    },
+    {
+      "key": "police_station",
+      "headings": [
+        "Police Station / पुलिस थाना"
+      ]
+    },
+    {
+      "key": "association_name",
+      "headings": [
+        "Association / Society Name / एसोसिएशन / संस्था का नाम"
+      ]
+    },
+    {
+      "key": "place",
+      "headings": [
+        "Place / स्थान"
+      ]
+    },
+    {
+      "key": "signatory_name",
+      "headings": [
+        "Signatory Name / हस्ताक्षरकर्ता का नाम"
+      ]
+    }
+  ],
+  "by_law": [
+    {
+      "key": "association_name",
+      "headings": [
+        "Association Name / संस्था का नाम"
+      ]
+    },
+    {
+      "key": "association_address",
+      "headings": [
+        "Association Address / संस्था का पंजीकृत पता"
+      ]
+    },
+    {
+      "key": "work_area",
+      "headings": [
+        "Work Area / संस्था का कार्यक्षेत्र"
+      ]
+    }
+  ],
+  "form_a_registration": [
+    {
+      "key": "association_name",
+      "headings": [
+        "Association Name / प्रस्तावित संस्था का नाम"
+      ]
+    },
+    {
+      "key": "association_address",
+      "headings": [
+        "Association Address / संस्था का पता"
+      ]
+    },
+    {
+      "key": "work_area",
+      "headings": [
+        "Work Area / कार्यक्षेत्र"
+      ]
+    },
+    {
+      "key": "share_capital",
+      "headings": [
+        "Share Capital / अंश पूंजी"
+      ]
+    },
+    {
+      "key": "price_per_share",
+      "headings": [
+        "Price Per Share / प्रति अंश कीमत"
+      ]
+    },
+    {
+      "key": "member_count",
+      "headings": [
+        "Number of Members / सदस्यों की संख्या"
+      ]
+    },
+    {
+      "key": "association_email",
+      "headings": [
+        "Association Email / संस्था ईमेल"
+      ]
+    },
+    {
+      "key": "project_name",
+      "headings": [
+        "Project Name / परियोजना का नाम"
+      ]
+    },
+    {
+      "key": "completion_certificate_no",
+      "headings": [
+        "Completion Certificate Number / पूर्णता प्रमाण-पत्र क्रमांक"
+      ]
+    },
+    {
+      "key": "completion_certificate_date",
+      "headings": [
+        "Completion Certificate Date / पूर्णता प्रमाण-पत्र दिनांक"
+      ]
+    },
+    {
+      "key": "district_name",
+      "headings": [
+        "District / जिला"
+      ]
+    },
+    {
+      "key": "management_committee_address",
+      "headings": [
+        "Management Committee Address / प्रबंध कार्यकारिणी का पता"
+      ]
+    },
+    {
+      "key": "meeting_chairperson_name",
+      "headings": [
+        "Meeting Chairperson Name / बैठक अध्यक्ष का नाम"
+      ]
+    },
+    {
+      "key": "proposed_by",
+      "headings": [
+        "Proposed By / प्रस्ताव रखने वाले का नाम"
+      ]
+    },
+    {
+      "key": "approved_by",
+      "headings": [
+        "Approved By / अनुमोदन करने वाले का नाम"
+      ]
+    },
+    {
+      "key": "committee_member_1_name",
+      "headings": [
+        "Committee Member 1 Name / समिति सदस्य 1 का नाम"
+      ]
+    },
+    {
+      "key": "committee_member_1_designation",
+      "headings": [
+        "Committee Member 1 Designation / समिति सदस्य 1 का पद"
+      ]
+    },
+    {
+      "key": "committee_member_1_plot_no",
+      "headings": [
+        "Committee Member 1 Plot Number / समिति सदस्य 1 भूखंड क्रमांक"
+      ]
+    },
+    {
+      "key": "committee_member_1_mobile",
+      "headings": [
+        "Committee Member 1 Mobile Number / समिति सदस्य 1 मोबाइल नंबर"
+      ]
+    },
+    {
+      "key": "committee_member_2_name",
+      "headings": [
+        "Committee Member 2 Name / समिति सदस्य 2 का नाम"
+      ]
+    },
+    {
+      "key": "committee_member_2_designation",
+      "headings": [
+        "Committee Member 2 Designation / समिति सदस्य 2 का पद"
+      ]
+    },
+    {
+      "key": "committee_member_2_plot_no",
+      "headings": [
+        "Committee Member 2 Plot Number / समिति सदस्य 2 भूखंड क्रमांक"
+      ]
+    },
+    {
+      "key": "committee_member_2_mobile",
+      "headings": [
+        "Committee Member 2 Mobile Number / समिति सदस्य 2 मोबाइल नंबर"
+      ]
+    },
+    {
+      "key": "committee_member_3_name",
+      "headings": [
+        "Committee Member 3 Name / समिति सदस्य 3 का नाम"
+      ]
+    },
+    {
+      "key": "committee_member_3_designation",
+      "headings": [
+        "Committee Member 3 Designation / समिति सदस्य 3 का पद"
+      ]
+    },
+    {
+      "key": "committee_member_3_plot_no",
+      "headings": [
+        "Committee Member 3 Plot Number / समिति सदस्य 3 भूखंड क्रमांक"
+      ]
+    },
+    {
+      "key": "committee_member_3_mobile",
+      "headings": [
+        "Committee Member 3 Mobile Number / समिति सदस्य 3 मोबाइल नंबर"
+      ]
+    },
+    {
+      "key": "committee_member_4_name",
+      "headings": [
+        "Committee Member 4 Name / समिति सदस्य 4 का नाम"
+      ]
+    },
+    {
+      "key": "committee_member_4_designation",
+      "headings": [
+        "Committee Member 4 Designation / समिति सदस्य 4 का पद"
+      ]
+    },
+    {
+      "key": "committee_member_4_plot_no",
+      "headings": [
+        "Committee Member 4 Plot Number / समिति सदस्य 4 भूखंड क्रमांक"
+      ]
+    },
+    {
+      "key": "committee_member_4_mobile",
+      "headings": [
+        "Committee Member 4 Mobile Number / समिति सदस्य 4 मोबाइल नंबर"
+      ]
+    },
+    {
+      "key": "committee_member_5_name",
+      "headings": [
+        "Committee Member 5 Name / समिति सदस्य 5 का नाम"
+      ]
+    },
+    {
+      "key": "committee_member_5_designation",
+      "headings": [
+        "Committee Member 5 Designation / समिति सदस्य 5 का पद"
+      ]
+    },
+    {
+      "key": "committee_member_5_plot_no",
+      "headings": [
+        "Committee Member 5 Plot Number / समिति सदस्य 5 भूखंड क्रमांक"
+      ]
+    },
+    {
+      "key": "committee_member_5_mobile",
+      "headings": [
+        "Committee Member 5 Mobile Number / समिति सदस्य 5 मोबाइल नंबर"
+      ]
+    },
+    {
+      "key": "committee_member_6_name",
+      "headings": [
+        "Committee Member 6 Name / समिति सदस्य 6 का नाम"
+      ]
+    },
+    {
+      "key": "committee_member_6_designation",
+      "headings": [
+        "Committee Member 6 Designation / समिति सदस्य 6 का पद"
+      ]
+    },
+    {
+      "key": "committee_member_6_plot_no",
+      "headings": [
+        "Committee Member 6 Plot Number / समिति सदस्य 6 भूखंड क्रमांक"
+      ]
+    },
+    {
+      "key": "committee_member_6_mobile",
+      "headings": [
+        "Committee Member 6 Mobile Number / समिति सदस्य 6 मोबाइल नंबर"
+      ]
+    },
+    {
+      "key": "committee_member_7_name",
+      "headings": [
+        "Committee Member 7 Name / समिति सदस्य 7 का नाम"
+      ]
+    },
+    {
+      "key": "committee_member_7_designation",
+      "headings": [
+        "Committee Member 7 Designation / समिति सदस्य 7 का पद"
+      ]
+    },
+    {
+      "key": "committee_member_7_plot_no",
+      "headings": [
+        "Committee Member 7 Plot Number / समिति सदस्य 7 भूखंड क्रमांक"
+      ]
+    },
+    {
+      "key": "committee_member_7_mobile",
+      "headings": [
+        "Committee Member 7 Mobile Number / समिति सदस्य 7 मोबाइल नंबर"
+      ]
+    },
+    {
+      "key": "committee_member_8_name",
+      "headings": [
+        "Committee Member 8 Name / समिति सदस्य 8 का नाम"
+      ]
+    },
+    {
+      "key": "committee_member_8_designation",
+      "headings": [
+        "Committee Member 8 Designation / समिति सदस्य 8 का पद"
+      ]
+    },
+    {
+      "key": "committee_member_8_plot_no",
+      "headings": [
+        "Committee Member 8 Plot Number / समिति सदस्य 8 भूखंड क्रमांक"
+      ]
+    },
+    {
+      "key": "committee_member_8_mobile",
+      "headings": [
+        "Committee Member 8 Mobile Number / समिति सदस्य 8 मोबाइल नंबर"
+      ]
+    },
+    {
+      "key": "committee_member_9_name",
+      "headings": [
+        "Committee Member 9 Name / समिति सदस्य 9 का नाम"
+      ]
+    },
+    {
+      "key": "committee_member_9_designation",
+      "headings": [
+        "Committee Member 9 Designation / समिति सदस्य 9 का पद"
+      ]
+    },
+    {
+      "key": "committee_member_9_plot_no",
+      "headings": [
+        "Committee Member 9 Plot Number / समिति सदस्य 9 भूखंड क्रमांक"
+      ]
+    },
+    {
+      "key": "committee_member_9_mobile",
+      "headings": [
+        "Committee Member 9 Mobile Number / समिति सदस्य 9 मोबाइल नंबर"
+      ]
+    },
+    {
+      "key": "committee_member_10_name",
+      "headings": [
+        "Committee Member 10 Name / समिति सदस्य 10 का नाम"
+      ]
+    },
+    {
+      "key": "committee_member_10_designation",
+      "headings": [
+        "Committee Member 10 Designation / समिति सदस्य 10 का पद"
+      ]
+    },
+    {
+      "key": "committee_member_10_plot_no",
+      "headings": [
+        "Committee Member 10 Plot Number / समिति सदस्य 10 भूखंड क्रमांक"
+      ]
+    },
+    {
+      "key": "committee_member_10_mobile",
+      "headings": [
+        "Committee Member 10 Mobile Number / समिति सदस्य 10 मोबाइल नंबर"
+      ]
+    },
+    {
+      "key": "committee_member_11_name",
+      "headings": [
+        "Committee Member 11 Name / समिति सदस्य 11 का नाम"
+      ]
+    },
+    {
+      "key": "committee_member_11_designation",
+      "headings": [
+        "Committee Member 11 Designation / समिति सदस्य 11 का पद"
+      ]
+    },
+    {
+      "key": "committee_member_11_plot_no",
+      "headings": [
+        "Committee Member 11 Plot Number / समिति सदस्य 11 भूखंड क्रमांक"
+      ]
+    },
+    {
+      "key": "committee_member_11_mobile",
+      "headings": [
+        "Committee Member 11 Mobile Number / समिति सदस्य 11 मोबाइल नंबर"
+      ]
+    }
+  ]
+}

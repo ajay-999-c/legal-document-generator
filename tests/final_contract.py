@@ -21,5 +21,5 @@ def assert_contract(key):
         for i in range(1, 12):
             for part, en, hi in [('name', 'Name', 'का नाम'), ('designation', 'Designation', 'का पद'),
                                  ('plot_no', 'Plot Number', 'भूखंड क्रमांक'), ('mobile', 'Mobile Number', 'मोबाइल नंबर')]:
-                expected.append((f'Committee Member {i} {en} / समिति सदस्य {i} {hi}', f'committee_member_{i}_{part}', i <= 5))
+                expected.append((f'Committee Member {i} {en} / समिति सदस्य {i} {hi}', f'committee_member_{i}_{part}', i <= 3))
     assert [(f.heading, f.parameter, f.required) for f in SPECS[key].fields] == expected

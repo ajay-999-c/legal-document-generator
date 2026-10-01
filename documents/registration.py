@@ -2,7 +2,7 @@
 from models import DocumentSpec, Field
 
 FIELDS = (
-    Field('authority_location', 'Authority Location / सक्षम प्राधिकारी का स्थान', 'authority_location'),
+    Field('tehsil', 'Tehsil / तहसील', 'authority_location', aliases=('Authority Location / सक्षम प्राधिकारी का स्थान',)),
     Field('project_name', 'Project Name / परियोजना का नाम', 'project_name'),
     Field('association_address', 'Association Address', 'association_address'),
     Field('police_station', 'Police Station / पुलिस थाना', 'police_station'),

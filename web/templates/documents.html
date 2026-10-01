@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% from 'macros.html' import document_card with context %}{% block content %}
+<h2 class="h3">Documents</h2><p class="text-secondary">Generate a project document to download a Word file. Member documents download together as a ZIP file.</p>
+<h3 class="eyebrow mt-4 mb-3">PROJECT DOCUMENTS</h3><div class="row g-4">{% for card in cards %}{{ document_card(card, project) }}{% endfor %}</div>
+<section class="mt-4"><h3 class="eyebrow mb-3">MEMBER DOCUMENTS</h3><div class="row g-4">{% for label, explanation in [('Affidavits','An affidavit for every project member.'),('Consent Letters','A consent letter for every project member.')] %}<div class="col-md-6"><div class="card card-body h-100"><h4 class="h5">{{ label }}</h4><p class="text-secondary small">{{ explanation }}</p><a href="/projects/{{ project.project_id }}/members">Generate for all members →</a></div></div>{% endfor %}</div></section>
+<p class="mt-4"><a class="btn btn-outline-primary" href="/projects/{{ project.project_id }}/details#document-details">Edit document-specific details in Project Details</a></p>
+{% endblock %}

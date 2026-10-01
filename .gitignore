@@ -34,7 +34,34 @@ env/
 /local-notes/
 /.agents/
 /.codex/
-# FORM_SPEC_FINAL.md is required by tests; keep business/developer specs visible.
+# Web-only publication: working specs and tests remain available locally.
+/FORM_SPEC_FINAL.md
+/GOOGLE_SHEET_UI_COLUMNS.md
+/MASTER_VARIABLE_SPEC.md
+/mater_ui_variables.md
+/tests/
+/setup_ui_test_sheets.py
+
+# Legacy desktop/CLI entry points and supporting modules (not imported by web/)
+/app.py
+/main.py
+/desktop.py
+/desktop_config.py
+/runtime_paths.py
+/config_manager.py
+/processor.py
+/sheets_service.py
+/scripts/smoke_gui.py
+
+# Desktop packaging and deployment
+/build_windows.bat
+/install_windows.ps1
+/legal_document_generator.spec
+/requirements-build.txt
+/WINDOWS_DEPLOYMENT.md
+
+# Keep web/, documents/, document_generator.py, document_registry.py, models.py,
+# requirements-web.txt, config.example.yaml, README.md and WEB_UI_README.md.
 
 # Secrets and private runtime configuration
 credentials.json
@@ -44,9 +71,12 @@ credentials.json
 *serviceaccount*.json
 secrets/
 .secrets/
+/.aws/
 .streamlit/secrets.toml
 .env
 .env.*
+!.env.example
+!.env.sample
 *.pem
 *.key
 *.p12
@@ -63,9 +93,13 @@ generated/
 output/
 *.docx
 *.pdf
-# Application Word templates are source assets, including legacy templates
-!**/templates/**/*.docx
-!**/template/**/*.docx
+# Only the six active web document templates are source assets.
+!/templates/Noc_Template.docx
+!/templates/Registration_Template.docx
+!/templates/By_Law_Template.docx
+!/templates/Form_A_Registration_Template.docx
+!/templates/Affidavit_Template.docx
+!/templates/Consent_Template.docx
 
 # Temporary renders, previews, and runtime logs
 preview/
@@ -87,7 +121,7 @@ logs/
 *.temp
 ~$*
 
-# Python packaging, builds, and installers (keep build scripts)
+# Python packaging, builds, and installers
 build/
 dist/
 *.spec
@@ -111,6 +145,3 @@ Desktop.ini
 .idea/
 *.swp
 *.swo
-
-# Reviewed Windows build specification
-!legal_document_generator.spec

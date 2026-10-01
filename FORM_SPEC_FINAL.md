@@ -198,8 +198,9 @@ error_message
 | 10 | Completion Certificate Date / पूर्णता प्रमाण पत्र दिनांक | Date | Yes | `completion_certificate_date` | `{{CERT_DATE}}` |
 | 11 | Plot Number / भूखंड क्रमांक | Short answer | Yes | `plot_no` | `{{PLOT_NO}}` |
 | 12 | Association Name / संघ का नाम | Short answer | Yes | `association_name` | `{{ASSOCIATION_NAME}}` |
-| 13 | Authority Location / सक्षम प्राधिकारी का स्थान | Short answer | Yes | `authority_location` | `{{AUTHORITY_LOCATION}}` |
+| 13 | Tehsil / तहसील | Short answer | Yes | `tehsil` | `{{AUTHORITY_LOCATION}}` |
 | 14 | City / Place / शहर / स्थान | Short answer | Yes | `city` | `{{CITY}}` |
+| 15 | Member Designation / सदस्य का पद | Short answer | Yes | `member_designation` | `{{MEMBER_DESIGNATION}}` |
 
 ### Removed legacy Affidavit fields
 
@@ -213,8 +214,10 @@ Do not require or restore:
 
 ### Fixed Affidavit content
 
-- Designation is fixed in the document as **कार्यकारिणी कोषाध्यक्ष**.
-- There is no Google Form Designation field.
+- Only **कार्यकारिणी** is fixed; the template uses `कार्यकारिणी {{MEMBER_DESIGNATION}}`.
+- Enter only the designation, e.g. `कोषाध्यक्ष`, `अध्यक्ष`, `सचिव` or `सदस्य`; do not include `कार्यकारिणी`.
+- `member_designation` is required. Surrounding whitespace is stripped; blank values fail validation and no default is supplied.
+- Before live generation, manually add a required short-answer question titled exactly **Member Designation / सदस्य का पद** to the Affidavit Google Form. Ensure the linked **Affidavit Responses** sheet has that exact column and fill the correct designation for existing rows you intend to generate. Missing headers fail read-only header validation; blank row values fail generation. This code change does not modify live Forms or Sheets.
 - There is no Google Form Document Date field.
 - Manual/fixed blank date markers in the final template must remain fixed.
 - `association_address` already contains Khasra + location.
@@ -235,8 +238,9 @@ Completion Certificate Number / पूर्णता प्रमाण पत�
 Completion Certificate Date / पूर्णता प्रमाण पत्र दिनांक
 Plot Number / भूखंड क्रमांक
 Association Name / संघ का नाम
-Authority Location / सक्षम प्राधिकारी का स्थान
+Tehsil / तहसील
 City / Place / शहर / स्थान
+Member Designation / सदस्य का पद
 processing_status
 generated_file
 processed_at
@@ -396,7 +400,7 @@ error_message
 
 | # | Exact Google Form / Sheet column | Type | Required? | Backend parameter |
 |---|---|---|---|---|
-| 1 | Authority Location / सक्षम प्राधिकारी का स्थान | Short answer | Yes | `authority_location` |
+| 1 | Tehsil / तहसील | Short answer | Yes | `tehsil` |
 | 2 | Project Name / परियोजना का नाम | Short answer | Yes | `project_name` |
 | 3 | Association Address | Paragraph | Yes | `association_address` |
 | 4 | Police Station / पुलिस थाना | Short answer | Yes | `police_station` |
@@ -419,7 +423,7 @@ error_message
 
 ```text
 Timestamp
-Authority Location / सक्षम प्राधिकारी का स्थान
+Tehsil / तहसील
 Project Name / परियोजना का नाम
 Association Address
 Police Station / पुलिस थाना
@@ -478,7 +482,7 @@ error_message
 **Form name:** `Form-A Association Registration Details / संस्था पंजीयन प्रारूप-क विवरण फॉर्म`
 
 **Description:**  
-`Please fill in the required details carefully for preparing Form-A registration documents and proceedings. Committee Members 1–5 are mandatory; Members 6–11 are optional. / कृपया संस्था पंजीयन प्रारूप-क एवं कार्यवाही दस्तावेज़ तैयार करने हेतु आवश्यक जानकारी सही-सही भरें। समिति सदस्य 1–5 अनिवार्य हैं तथा सदस्य 6–11 वैकल्पिक हैं।`
+`Please fill in the required details carefully for preparing Form-A registration documents and proceedings. Committee Members 1–3 are mandatory; Members 4–11 are optional. / कृपया संस्था पंजीयन प्रारूप-क एवं कार्यवाही दस्तावेज़ तैयार करने हेतु आवश्यक जानकारी सही-सही भरें। समिति सदस्य 1–3 अनिवार्य हैं तथा सदस्य 4–11 वैकल्पिक हैं।`
 
 **Worksheet:** `Form A Registration Responses`  
 **Backend key:** `form_a_registration`
@@ -532,9 +536,9 @@ No separate father-name field. The Name value may already contain father-name te
 
 No committee-member email field.
 
-#### Members 1–5 — required
+#### Members 1–3 — required
 
-For each N = 1..5:
+For each N = 1..3:
 
 - `Committee Member N Name / समिति सदस्य N का नाम`
 - `Committee Member N Designation / समिति सदस्य N का पद`
@@ -543,7 +547,7 @@ For each N = 1..5:
 
 All four required.
 
-#### Members 6–11 — optional
+#### Members 4–11 — optional
 
 Same four fields, optional with backend completeness rules:
 
@@ -675,16 +679,16 @@ error_message
 | Document | Document-input fields | Required | Optional |
 |---|---:|---:|---:|
 | NOC | 12 | 11 | 1 |
-| Affidavit | 14 | 14 | 0 |
+| Affidavit | 15 | 15 | 0 |
 | Consent | 35 | 22 | 13 |
 | Registration | 7 | 7 | 0 |
 | By-Law | 3 | 3 | 0 |
-| Form-A Registration | 59 | 34 | 25 |
+| Form-A Registration | 59 | 26 | 33 |
 
 Notes:
 
 - Consent optional count = Document Date + Member 6–11 pairs.
-- Form-A optional count = Association Email + all four fields for Members 6–11.
+- Form-A optional count = Association Email + all four fields for Members 4–11.
 - Optional grouped-member fields are conditionally complete: partial member rows are invalid.
 
 ---
@@ -759,3 +763,5 @@ Google Form
 ```
 
 Do not treat an adapter as production-complete from unit tests alone.
+
+Compatibility: Affidavit and Registration accept the former response heading `Authority Location / सक्षम प्राधिकारी का स्थान` as an alias for `Tehsil / तहसील`. Existing DOCX placeholders `AUTHORITY_LOCATION` (Affidavit) and `authority_location` (Registration) are populated from the `tehsil` parameter.

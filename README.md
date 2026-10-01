@@ -5,7 +5,7 @@ Shared backend and CLI for six legal document types, with one registry-driven Tk
 | Key | Worksheet | Inputs | Required | Optional |
 | --- | --- | ---: | ---: | --- |
 | `noc` | `NOC Responses` | 12 | 11 | Document Date |
-| `affidavit` | `Affidavit Responses` | 14 | 14 | None |
+| `affidavit` | `Affidavit Responses` | 15 | 15 | None |
 | `consent` | `Consent Responses` | 35 | 22 | Document Date; members 6–11 conditionally required |
 | `registration` | `Registration Responses` | 7 | 7 | None |
 | `by_law` | `By-Law Responses` | 3 | 3 | None |
@@ -230,8 +230,8 @@ was edited. All use the complete `association_address`; none needs separate
 Khasra/project-location input. Registration has no Document Date input. See
 [the explicit mappings and required-field contract](FORM_SPEC_FINAL.md).
 
-Form-A accepts 5–11 complete committee members, with no gaps in optional members
-6–11. Any supplied optional member requires name, designation, plot_no and mobile.
+Form-A accepts 3–11 complete committee members, with no gaps in optional members
+4–11. Any supplied optional member requires name, designation, plot_no and mobile.
 A single committee list feeds every repeated table and supplies the first
 signatory/president from member 1. The independent meeting roles remain required.
 Meeting date stays 13 literal dots. The final table contains `member_count` data
@@ -282,8 +282,12 @@ page; its preserved template contains an explicit page break and 231 paragraphs.
 NOC, Affidavit, Consent and Registration now follow `FORM_SPEC_FINAL.md` and
 verified live headings. Registration's address heading is exactly `Association Address`
 (English only). Affidavit translates the final inputs to the template's existing
-uppercase placeholders, except lowercase `association_address`. Its treasurer wording
-and manual date blanks are fixed. NOC has no signatory-role input. By-Law and Form-A
+uppercase placeholders, except lowercase `association_address`. Its `कार्यकारिणी` prefix
+and manual date blanks are fixed; required `member_designation` supplies only the
+designation through `MEMBER_DESIGNATION`. Before live generation, manually add
+**Member Designation / सदस्य का पद** as a required Form question and matching
+Affidavit response column, and fill it for existing rows to be generated. Enter
+only `कोषाध्यक्ष`, `अध्यक्ष`, `सचिव`, `सदस्य`, or another designation—not `कार्यकारिणी`. NOC has no signatory-role input. By-Law and Form-A
 retain their existing business contracts. Registry keys, configuration, shared processing,
 status/retry rules and Windows files were not changed.
 

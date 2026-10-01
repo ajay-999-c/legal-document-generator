@@ -1,0 +1,25 @@
+:root { --bs-primary: #235a88; --bs-primary-rgb: 35,90,136; }
+body { background: #f5f7fa; color: #243448; font-family: system-ui, -apple-system, "Nirmala UI", sans-serif; }
+.topbar { background: #fff; border-bottom: 1px solid #dce3eb; padding: 1.1rem 0; }
+.brand { display: flex; align-items: center; gap: .75rem; text-decoration: none; font-size: 1.1rem; font-weight: 650; color: #243448; }
+.brand-icon { background: #235a88; color: #fff; border-radius: .45rem; padding: .25rem .65rem; }
+.demo-strip { background: #edf2f7; color: #536477; font-size: .8rem; padding: .55rem 0; }
+h1 { font-size: 1.85rem; font-weight: 650; } h2,h3,h4 { color: #243448; }
+.eyebrow { color: #617487; font-size: .72rem; font-weight: 700; letter-spacing: .1em; margin-bottom: .4rem; }
+.card { border: 1px solid #dde4ec; border-radius: .65rem; box-shadow: 0 2px 5px #24344804; }
+.card-body { padding: 1.5rem; }
+.project-heading { margin-bottom: 1.6rem; }
+.project-tabs .nav-link { padding: .85rem 1.2rem; color: #536477; }
+.project-tabs .nav-link.active { color: #235a88; font-weight: 600; border-bottom-color: #fff; }
+.btn { padding: .65rem 1.1rem; font-weight: 550; }
+.btn-sm { padding: .4rem .65rem; }
+.btn-primary { --bs-btn-bg: #235a88; --bs-btn-border-color: #235a88; --bs-btn-hover-bg: #19466b; --bs-btn-hover-border-color: #19466b; }
+.btn-outline-primary { --bs-btn-color: #235a88; --bs-btn-border-color: #235a88; --bs-btn-hover-bg: #235a88; --bs-btn-hover-border-color: #235a88; }
+.form-label { font-weight: 550; font-size: .9rem; }.form-control,.form-select { min-height: 2.8rem; }
+.form-width { max-width: 940px; }.search-bar { max-width: 600px; }
+.table th { font-size: .85rem; }.table thead th { background: #f7f9fc; color: #56677a; font-weight: 600; }
+.table > :not(caption) > * > * { padding: 1rem; }.form-check-input { width: 1.2rem; height: 1.2rem; }
+.status-ready { color: #235a88; background: #e7f0fa; }.badge { font-weight: 600; padding: .5em .75em; }
+.president-panel { padding: 1.2rem 1.5rem; border-left: 4px solid #235a88; background: #eaf1f9; border-radius: .35rem; }
+dt,dd { margin-bottom: .8rem; } dt { font-size: .9rem; color: #5c6e82; }
+@media (max-width: 575px) { h1 { font-size: 1.5rem; }.project-tabs .nav-link { padding: .7rem .65rem; font-size: .85rem; }.card-body { padding: 1.1rem; }.brand { font-size: .95rem; } }
