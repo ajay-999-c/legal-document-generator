@@ -161,3 +161,11 @@ Developer details now have three separate fields: `developer_name`, `developer_a
 ## Unique project names
 
 Project name is the unique business key for create, edit and import. Comparison ignores case, leading/trailing and repeated whitespace, and canonically equivalent Unicode. Internal `project_id` remains stable for member references and URLs, including when a project is renamed. Duplicate create/rename submissions return a 409 form error without overwriting the existing project. Import opens the existing same-name project even if its association differs. Repository checks run inside the write lock, preventing simultaneous duplicate saves in the supported single-process app. Google Sheets does not enforce a unique constraint: direct sheet edits and independent app processes are outside this guarantee. Existing duplicate records are not automatically deleted or merged; they remain available for review. No new sheet columns are needed.
+
+## Builder NOC
+
+Builder NOC is the seventh web document type (five project types plus Affidavit and Consent). It appears on the project overview and Documents page. `POST /projects/{project_id}/documents/builder_noc/generate` uses the existing project handler to download `builder_noc_{safe_project_name}.docx` in memory, without writing to the generated folder.
+
+`documents/builder_noc.py` validates these existing `UI Projects` fields and maps each to its identically named template placeholder: `developer_company`, `developer_address`, `developer_name`, `tehsil`, `district_name`, `association_name`, `project_name`, `association_address`, `rera_registration_no`, `completion_certificate_no`, and `completion_certificate_date`. The certificate date uses the existing ISO-to-DD-MM-YYYY formatting. `association_address` supplies the complete location/Khasra text as entered. No committee or member record is required.
+
+`templates/Builder_NOC_Template.docx` is used unchanged, including its printed `दिनांक:------------` line. No `document_date`, form fields, Sheet columns or separate response worksheet are added. The web registry extends the existing six adapters locally, leaving desktop/CLI and legacy import contracts unchanged.

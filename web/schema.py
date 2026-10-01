@@ -62,6 +62,6 @@ SETTINGS_GROUPS = {
 PROJECT_FIELDS = tuple(f for fields in PROJECT_GROUPS.values() for f in fields)
 SETTINGS_FIELDS = tuple(f for fields in SETTINGS_GROUPS.values() for f in fields)
 LABELS = {f.key: f.label for f in (*PROJECT_FIELDS, *MEMBER_FIELDS, *SETTINGS_FIELDS)}
-PROJECT_DOCUMENTS = {'noc': 'NOC', 'registration': 'Registration', 'by_law': 'By-Law', 'form_a': 'Form-A'}
+PROJECT_DOCUMENTS = {'noc': 'NOC', 'registration': 'Registration', 'by_law': 'By-Law', 'form_a': 'Form-A', 'builder_noc': 'Builder NOC'}
 MEMBER_DOCUMENTS = {'affidavit': 'Affidavit', 'consent': 'Consent'}
 DESIGNATIONS = ('अध्यक्ष', 'उपाध्यक्ष', 'सचिव', 'सह सचिव', 'कोषाध्यक्ष', 'सदस्य')

@@ -3,6 +3,7 @@ from web.schema import LABELS, PROJECT_DOCUMENTS, MEMBER_DOCUMENTS
 
 BASE = 'project_name association_name association_address completion_certificate_no completion_certificate_date'.split()
 REQUIRED = {
+    'builder_noc': 'developer_company developer_address developer_name tehsil district_name association_name project_name association_address rera_registration_no completion_certificate_no completion_certificate_date'.split(),
     'noc': BASE + 'project_location rera_registration_no developer_name developer_address developer_company'.split(),
     'affidavit': BASE + 'rera_registration_no developer_name tehsil affidavit_execution_place'.split(),
     'consent': BASE + 'project_location rera_registration_no consent_place'.split(),

@@ -9,18 +9,23 @@ from fastapi.responses import Response
 
 from document_generator import render_bytes, safe_component, validate_values
 from document_registry import SPECS
+from documents.builder_noc import SPEC as BUILDER_NOC
 from web.services import committee, president
+
+# Builder NOC is web-only; legacy response-sheet contracts remain unchanged.
+WEB_SPECS = {**SPECS, BUILDER_NOC.key: BUILDER_NOC}
 
 TEMPLATES = {
     'noc': 'Noc_Template.docx', 'registration': 'Registration_Template.docx',
     'by_law': 'By_Law_Template.docx', 'form_a': 'Form_A_Registration_Template.docx',
     'affidavit': 'Affidavit_Template.docx', 'consent': 'Consent_Template.docx',
+    'builder_noc': 'Builder_NOC_Template.docx',
 }
 DOCX_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
 
 def render_document(project, kind, member=None):
-    spec = SPECS['form_a_registration' if kind == 'form_a' else kind]
+    spec = WEB_SPECS['form_a_registration' if kind == 'form_a' else kind]
     values = {**project.details, **project.settings}
     member = member or {}
     if kind == 'noc':

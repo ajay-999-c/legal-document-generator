@@ -39,7 +39,8 @@ env/
 /GOOGLE_SHEET_UI_COLUMNS.md
 /MASTER_VARIABLE_SPEC.md
 /mater_ui_variables.md
-/tests/
+/tests/*
+!/tests/test_builder_noc.py
 /setup_ui_test_sheets.py
 
 # Legacy desktop/CLI entry points and supporting modules (not imported by web/)
@@ -93,8 +94,9 @@ generated/
 output/
 *.docx
 *.pdf
-# Only the six active web document templates are source assets.
+# Only the seven active web document templates are source assets.
 !/templates/Noc_Template.docx
+!/templates/Builder_NOC_Template.docx
 !/templates/Registration_Template.docx
 !/templates/By_Law_Template.docx
 !/templates/Form_A_Registration_Template.docx
