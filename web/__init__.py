@@ -1,1 +1,3 @@
-"""Isolated local UI prototype. No production backend imports."""
+"""Jobmitra web application."""
+
+__version__ = "0.6.0"

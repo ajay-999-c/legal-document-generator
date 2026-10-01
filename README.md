@@ -1,24 +1,36 @@
-# Legal Document Generator
+# Jobmitra Legal Document Manager
 
-Shared backend and CLI for six legal document types, with one registry-driven Tkinter desktop for all six workflows. Registration, By-Law, and Form-A were added for Mac/backend validation only on 24 September 2026. Each document uses its own worksheet and output directory in one spreadsheet. The current business contract is [FORM_SPEC_FINAL.md](FORM_SPEC_FINAL.md). No legacy application is imported at runtime.
+Current application version: **v0.6.0**.
 
-| Key | Worksheet | Inputs | Required | Optional |
-| --- | --- | ---: | ---: | --- |
-| `noc` | `NOC Responses` | 12 | 11 | Document Date |
-| `affidavit` | `Affidavit Responses` | 15 | 15 | None |
-| `consent` | `Consent Responses` | 35 | 22 | Document Date; members 6–11 conditionally required |
-| `registration` | `Registration Responses` | 7 | 7 | None |
-| `by_law` | `By-Law Responses` | 3 | 3 | None |
-| `form_a_registration` | `Form A Registration Responses` | 59 | 34 | Association Email; members 6–11 conditionally required |
+Jobmitra uses a FastAPI web app to manage projects, members and committee assignments in Google Sheets and download seven document types: NOC, Registration, By-Law, Form-A, Affidavit, Consent and Builder NOC. Project documents download as DOCX files; member batches download as ZIP files.
 
-The Tkinter desktop application now adds registry-driven NOC, Affidavit, Consent, Registration, By-Law and Form-A Registration tabs on this shared backend. Run `.venv/bin/python app.py` from source. Each tab persists its own Save Folder in `config.yaml`; Generate runs only that document in a worker, with one job per application window. Startup performs no Sheets operations. Templates and administrator settings stay out of the office UI.
+The Tkinter GUI and its desktop installers have been removed. The shared document backend and legacy CLI remain available for offline validation and testing. See [the web application guide](WEB_UI_README.md) for configuration, repository behavior and document workflows.
 
-The Windows phase now provides a six-document seed and bundled templates, per-user
-AppData configuration/logs, safe first-launch provisioning and upgrade preservation.
-The backend's macOS live validation remains the source of truth. Windows binaries
-and installer execution still require acceptance on a real Windows machine.
+## Run the web app
 
-See [Windows deployment](WINDOWS_DEPLOYMENT.md) for build, installation, configuration, credentials, upgrades and acceptance checks. Windows packaging infrastructure is provided; the Windows executable and installer still require testing on Windows. Automatic polling and scheduled generation are not implemented.
+Copy `config.example.yaml` to `config.yaml` for a new installation, configure the Google spreadsheet ID, and provide `credentials.json` separately. Existing installations should keep their configured files. The service account needs access to the spreadsheet. Use `check` below for existing UI tabs; use `init` instead when creating the UI tabs for a new installation.
+
+On macOS/Linux, from the project folder:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-web.txt
+.venv/bin/python -m web.sheets_repository check
+.venv/bin/python -m uvicorn web.app:app --host 127.0.0.1 --port 8000 --workers 1
+```
+
+On Windows, in Command Prompt from the project folder:
+
+```bat
+py -3.13 -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements-web.txt
+.venv\Scripts\python.exe -m web.sheets_repository check
+.venv\Scripts\python.exe -m uvicorn web.app:app --host 127.0.0.1 --port 8000 --workers 1
+```
+
+Skip environment creation if the environment already exists on that computer. Do not transfer a Mac virtual environment to Windows. Open **http://127.0.0.1:8000**, keep the terminal open while working, and press Ctrl+C to stop. Use one worker without development reload for normal operation. Google Sheets requires an internet connection. DOCX generation does not require Microsoft Word.
+
+The remaining sections document the retained backend and CLI tooling.
 
 ## Environment and offline tests
 
@@ -174,22 +186,15 @@ File save and Sheet status update are **not one transaction**. Retrying the same
 
 ## Backend extension interface
 
-`run_batch(settings, document_key, rows=None, dry_run=False, worksheet=None, progress=None)` returns `BatchResult` with per-row outcomes, counts, saved paths and synchronization errors. An optional callback receives each `RowOutcome`; callback failure is logged without aborting document processing. The desktop calls this interface without importing any GUI code into the backend.
+`run_batch(settings, document_key, rows=None, dry_run=False, worksheet=None, progress=None)` returns `BatchResult` with per-row outcomes, counts, saved paths and synchronization errors. An optional callback receives each `RowOutcome`; callback failure is logged without aborting document processing. The retained CLI uses this interface independently of the web download flow.
 
-Adding a new document requires a versioned adapter/field contract, template, explicit registry entry and YAML entry. The shared processor and CLI generation path contain no per-document branches. The desktop application uses this same extension interface. Its generic tab component requires no document-specific UI functions; packaging includes templates explicitly, and the installer preserves existing runtime settings.
+Adding a new document requires a versioned adapter/field contract, template, explicit registry entry and YAML entry. The shared processor and CLI generation path contain no per-document branches. Web document options and in-memory downloads are configured separately in `web/schema.py`, `web/services.py`, and `web/downloads.py`.
 
 ## Published source and local files
 
-The repository includes application source, adapters, document templates, offline
-tests and fixtures, `FORM_SPEC_FINAL.md`, the redacted configuration example, build and
-installer scripts, and deployment documentation. Tests and the Form specification
-are required by the Windows build and must remain in the repository.
+The repository includes the web application, shared document adapters, seven DOCX templates, web regression tests, the redacted configuration example and setup documentation. The Tkinter GUI and desktop build/installer files have been removed.
 
-Internal implementation plans and notes stay local and are ignored, along with
-credentials, active configuration, virtual environments, generated documents, logs
-and build output. Put additional private development notes in `local-notes/`.
-The installer and first EXE launch use `config.example.yaml` only as an initial seed; provision the
-active `config.yaml` and credentials separately as described in the deployment guide.
+Internal implementation plans, working specs and legacy tooling are excluded from new Git additions by `.gitignore`; already-tracked files remain tracked unless explicitly removed. Credentials, active configuration, virtual environments, generated documents/ZIP downloads, logs, backups and build output stay local. Provision `config.yaml` and credentials separately; use `config.example.yaml` as a reference.
 
 ## Mac/backend extension commands and configuration
 

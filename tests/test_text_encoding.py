@@ -2,7 +2,6 @@
 from pathlib import Path
 import pytest
 
-from desktop_config import DesktopConfig
 from tests.helpers import values
 
 
@@ -28,13 +27,3 @@ def test_form_contract_with_cp1252_default(cp1252_default):
     from tests.test_documents import test_schema_against_business_contract
     for key, count, required in [('noc', 12, 11), ('affidavit', 15, 15), ('consent', 35, 22)]:
         test_schema_against_business_contract(key, count, required)
-
-
-def test_unicode_output_config_roundtrip_with_cp1252_default(cp1252_default, settings, tmp_path):
-    folder = tmp_path / 'परीक्षण Documents'
-    folder.mkdir()
-    store = DesktopConfig(settings.config_path)
-    updated = store.save_output('noc', folder)
-    assert updated.documents['noc'].output_dir == folder
-    assert store.load().documents['noc'].output_dir == folder
-    assert 'परीक्षण' in settings.config_path.read_text(encoding='utf-8')

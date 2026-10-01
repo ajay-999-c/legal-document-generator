@@ -1,6 +1,6 @@
 # Local web UI with Google Sheets storage
 
-This additive FastAPI + Jinja2 + Bootstrap 5 UI stores canonical projects, members and committee assignments in Google Sheets. It reuses the existing Google connection settings, service-account credentials, document adapters and DOCX templates. Generate returns a browser attachment: one DOCX for a project document, or a ZIP containing a personalized DOCX for every member. Rendering happens in memory; the web flow does not use the generated/ output folder or change legacy response rows/statuses. The desktop/CLI folder workflow remains available for testing.
+This additive FastAPI + Jinja2 + Bootstrap 5 UI stores canonical projects, members and committee assignments in Google Sheets. It reuses the existing Google connection settings, service-account credentials, document adapters and DOCX templates. Generate returns a browser attachment: one DOCX for a project document, or a ZIP containing a personalized DOCX for every member. Rendering happens in memory; the web flow does not use the generated/ output folder or change legacy response rows/statuses. The legacy CLI folder workflow remains available for testing; the Tkinter GUI and desktop packaging have been removed.
 
 ## Run locally
 
@@ -168,4 +168,4 @@ Builder NOC is the seventh web document type (five project types plus Affidavit 
 
 `documents/builder_noc.py` validates these existing `UI Projects` fields and maps each to its identically named template placeholder: `developer_company`, `developer_address`, `developer_name`, `tehsil`, `district_name`, `association_name`, `project_name`, `association_address`, `rera_registration_no`, `completion_certificate_no`, and `completion_certificate_date`. The certificate date uses the existing ISO-to-DD-MM-YYYY formatting. `association_address` supplies the complete location/Khasra text as entered. No committee or member record is required.
 
-`templates/Builder_NOC_Template.docx` is used unchanged, including its printed `दिनांक:------------` line. No `document_date`, form fields, Sheet columns or separate response worksheet are added. The web registry extends the existing six adapters locally, leaving desktop/CLI and legacy import contracts unchanged.
+`templates/Builder_NOC_Template.docx` is used unchanged, including its printed `दिनांक:------------` line. No `document_date`, form fields, Sheet columns or separate response worksheet are added. The web registry extends the existing six adapters locally, leaving CLI and legacy import contracts unchanged.

@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from web import __version__
 from web.mock_data import mock_repository
 from web.repository import RepositoryError, ConflictError
 from web.routes.ui import router, templates
@@ -17,7 +18,7 @@ def create_app(repository=None, *, storage="demo"):
     if repository is None and storage == "sheets":
         from web.sheets_repository import SheetsProjectRepository
         repository = SheetsProjectRepository()
-    app = FastAPI(title='Legal Document Manager · Local prototype', docs_url=None, redoc_url=None)
+    app = FastAPI(title='Legal Document Manager · Local prototype', version=__version__, docs_url=None, redoc_url=None)
     app.state.repository = repository if repository is not None else mock_repository()
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=['127.0.0.1', 'localhost', 'testserver'])
     app.mount('/static', StaticFiles(directory=str(Path(__file__).parent / 'static')), name='static')

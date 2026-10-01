@@ -34,32 +34,24 @@ env/
 /local-notes/
 /.agents/
 /.codex/
-# Web-only publication: working specs and tests remain available locally.
+# Working specs and legacy tests remain local; retain web regression tests.
 /FORM_SPEC_FINAL.md
 /GOOGLE_SHEET_UI_COLUMNS.md
 /MASTER_VARIABLE_SPEC.md
 /mater_ui_variables.md
 /tests/*
 !/tests/test_builder_noc.py
+!/tests/test_web_ui.py
+!/tests/test_web_sheets.py
+!/tests/test_web_import.py
+!/tests/test_project_uniqueness.py
 /setup_ui_test_sheets.py
 
-# Legacy desktop/CLI entry points and supporting modules (not imported by web/)
-/app.py
+# Legacy CLI entry point and supporting modules (not imported by web/)
 /main.py
-/desktop.py
-/desktop_config.py
-/runtime_paths.py
 /config_manager.py
 /processor.py
 /sheets_service.py
-/scripts/smoke_gui.py
-
-# Desktop packaging and deployment
-/build_windows.bat
-/install_windows.ps1
-/legal_document_generator.spec
-/requirements-build.txt
-/WINDOWS_DEPLOYMENT.md
 
 # Keep web/, documents/, document_generator.py, document_registry.py, models.py,
 # requirements-web.txt, config.example.yaml, README.md and WEB_UI_README.md.
@@ -94,6 +86,7 @@ generated/
 output/
 *.docx
 *.pdf
+*.zip
 # Only the seven active web document templates are source assets.
 !/templates/Noc_Template.docx
 !/templates/Builder_NOC_Template.docx
@@ -121,6 +114,7 @@ logs/
 *.log.*
 *.tmp
 *.temp
+*.bak
 ~$*
 
 # Python packaging, builds, and installers
